@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ko" class="bg-slate-50">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>도서관 관리 시스템</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: "#eff6ff",
+              100: "#dbeafe",
+              500: "#3b82f6",
+              600: "#2563eb",
+              700: "#1d4ed8",
+            },
+          },
+          fontFamily: {
+            sans: ["system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* 스크롤바 살짝 정리 */
+    ::-webkit-scrollbar { height: 8px; width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+
+<body class="font-sans text-slate-800 antialiased">
+  <div class="flex min-h-screen">
+    <!-- ============================= 사이드바 ============================= -->
+    <aside class="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
+      <div class="flex h-16 items-center gap-2 border-b border-slate-200 px-6">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <span class="text-lg font-semibold tracking-tight">LibraryOS</span>
+      </div>
+
+      <nav id="sidebar-nav" class="flex flex-1 flex-col gap-1 p-3">
+        <button data-tab="books" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          도서 관리
+        </button>
+        <button data-tab="users" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4z"/></svg>
+          회원 관리
+        </button>
+        <button data-tab="loans" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          대출 / 반납
+        </button>
+        <button data-tab="admin" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          관리자 대시보드
+        </button>
+      </nav>
+
+      <div class="border-t border-slate-200 p-4 text-xs text-slate-400">
+        API: <span class="font-mono">localhost:3000</span>
+      </div>
+    </aside>
+
+    <!-- ============================= 메인 영역 ============================= -->
+    <div class="flex flex-1 flex-col">
+      <!-- 헤더 -->
+      <header class="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 md:px-8">
+        <div>
+          <h1 id="page-title" class="text-lg font-semibold tracking-tight">도서 관리</h1>
+          <p id="page-subtitle" class="text-xs text-slate-400">도서 메타데이터와 사본을 관리합니다.</p>
+        </div>
+        <!-- 모바일 탭 셀렉터 -->
+        <select id="mobile-tab" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm md:hidden">
+          <option value="books">도서 관리</option>
+          <option value="users">회원 관리</option>
+          <option value="loans">대출 / 반납</option>
+          <option value="admin">관리자 대시보드</option>
+        </select>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-4 md:p-8">
+
+        <!-- ===================== 1. 도서 관리 ===================== -->
+        <section id="tab-books" class="tab-panel space-y-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-1 flex-col gap-2 sm:flex-row">
+              <input id="book-search-title" type="text" placeholder="제목 검색..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <input id="book-search-author" type="text" placeholder="저자 검색..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <button onclick="fetchBooks()" class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
+            </div>
+            <button onclick="openModal('modal-book')" class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">+ 도서 등록</button>
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th class="px-4 py-3">ISBN</th>
+                  <th class="px-4 py-3">제목</th>
+                  <th class="px-4 py-3">저자</th>
+                  <th class="px-4 py-3">출판사</th>
+                  <th class="px-4 py-3 text-center">보유/대출가능</th>
+                </tr>
+              </thead>
+              <tbody id="books-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===================== 2. 회원 관리 ===================== -->
+        <section id="tab-users" class="tab-panel hidden space-y-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-1 flex-col gap-2 sm:flex-row">
+              <input id="user-search-name" type="text" placeholder="회원 이름 검색..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <button onclick="fetchUsers()" class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
+            </div>
+            <button onclick="openModal('modal-user')" class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">+ 회원 추가</button>
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th class="px-4 py-3">회원 ID</th>
+                  <th class="px-4 py-3">이름</th>
+                  <th class="px-4 py-3">이메일</th>
+                  <th class="px-4 py-3">가입일</th>
+                  <th class="px-4 py-3 text-center">상태</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===================== 3. 대출 / 반납 ===================== -->
+        <section id="tab-loans" class="tab-panel hidden space-y-6">
+          <!-- 대출 폼 -->
+          <div class="rounded-xl border border-slate-200 bg-white p-5">
+            <h2 class="mb-4 text-sm font-semibold text-slate-700">신규 대출 등록</h2>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div class="flex-1">
+                <label class="mb-1 block text-xs font-medium text-slate-500">회원 ID</label>
+                <input id="loan-user-id" type="text" placeholder="예: U-1001" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              </div>
+              <div class="flex-1">
+                <label class="mb-1 block text-xs font-medium text-slate-500">도서 사본 ID</label>
+                <input id="loan-copy-id" type="text" placeholder="예: C-50231" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              </div>
+              <button onclick="createLoan()" class="rounded-lg bg-brand-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-700">대출</button>
+            </div>
+          </div>
+
+          <!-- 현재 대출 현황 -->
+          <div>
+            <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h2 class="text-sm font-semibold text-slate-700">회원 대출 현황</h2>
+              <div class="flex gap-2">
+                <input id="loan-lookup-user-id" type="text" placeholder="조회할 회원 ID" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                <button onclick="fetchUserLoans()" class="rounded-lg bg-slate-900 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-slate-700">조회</button>
+              </div>
+            </div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th class="px-4 py-3">대출 ID</th>
+                    <th class="px-4 py-3">도서 제목</th>
+                    <th class="px-4 py-3">사본 ID</th>
+                    <th class="px-4 py-3">대출일</th>
+                    <th class="px-4 py-3">반납 예정일</th>
+                    <th class="px-4 py-3 text-center">상태</th>
+                    <th class="px-4 py-3 text-center">작업</th>
+                  </tr>
+                </thead>
+                <tbody id="loans-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== 4. 관리자 대시보드 ===================== -->
+        <section id="tab-admin" class="tab-panel hidden space-y-8">
+          <!-- 통계 카드 -->
+          <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <p class="text-xs font-medium text-slate-500">총 대출 중</p>
+              <p class="mt-1 text-2xl font-semibold">128</p>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <p class="text-xs font-medium text-slate-500">연체 건수</p>
+              <p class="mt-1 text-2xl font-semibold text-red-600">14</p>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <p class="text-xs font-medium text-slate-500">등록 회원</p>
+              <p class="mt-1 text-2xl font-semibold">2,341</p>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <p class="text-xs font-medium text-slate-500">보유 도서</p>
+              <p class="mt-1 text-2xl font-semibold">9,872</p>
+            </div>
+          </div>
+
+          <!-- 제재 대상자(연체자) -->
+          <div>
+            <h2 class="mb-3 text-sm font-semibold text-slate-700">제재 대상자 (연체자)</h2>
+            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th class="px-4 py-3">회원 ID</th>
+                    <th class="px-4 py-3">이름</th>
+                    <th class="px-4 py-3">연체 도서</th>
+                    <th class="px-4 py-3 text-center">연체일수</th>
+                    <th class="px-4 py-3 text-center">상태</th>
+                  </tr>
+                </thead>
+                <tbody id="overdue-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 전체 이력 -->
+          <div>
+            <h2 class="mb-3 text-sm font-semibold text-slate-700">전체 대출 / 반납 이력</h2>
+            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th class="px-4 py-3">이력 ID</th>
+                    <th class="px-4 py-3">회원</th>
+                    <th class="px-4 py-3">도서</th>
+                    <th class="px-4 py-3">유형</th>
+                    <th class="px-4 py-3">일시</th>
+                  </tr>
+                </thead>
+                <tbody id="history-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+            <div class="mt-4 flex justify-center">
+              <button onclick="fetchHistory()" class="rounded-lg border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">다음 페이지 불러오기</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================= 모달: 도서 등록 ============================= -->
+  <div id="modal-book" hidden class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+    <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-base font-semibold">새 도서 등록</h3>
+        <button onclick="closeModal('modal-book')" class="text-slate-400 hover:text-slate-600">&times;</button>
+      </div>
+      <form id="form-book" onsubmit="event.preventDefault(); createBook();" class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500">제목</label>
+            <input name="title" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500">저자</label>
+            <input name="author" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500">ISBN</label>
+            <input name="isbn" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500">출판사</label>
+            <input name="publisher" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500">등록할 사본 수</label>
+            <input name="copies" type="number" min="1" value="1" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-book')" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">취소</button>
+          <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">등록</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================= 모달: 회원 추가 ============================= -->
+  <div id="modal-user" hidden class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-base font-semibold">새 회원 추가</h3>
+        <button onclick="closeModal('modal-user')" class="text-slate-400 hover:text-slate-600">&times;</button>
+      </div>
+      <form id="form-user" onsubmit="event.preventDefault(); createUser();" class="space-y-4">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-500">이름</label>
+          <input name="name" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-500">이메일</label>
+          <input name="email" type="email" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-500">연락처</label>
+          <input name="phone" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-user')" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">취소</button>
+          <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">추가</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================= JavaScript ============================= -->
+  <script>
+    "use strict";
+
+    /* =========================================================================
+     *  설정
+     * ========================================================================= */
+    const API_BASE = "http://localhost:3000";
+
+    /* =========================================================================
+     *  Mock 데이터 (백엔드 연동 전, 화면 확인용)
+     *  실제 연동 시 fetch 함수에서 이 데이터를 응답값으로 대체하면 됩니다.
+     * ========================================================================= */
+    const MOCK = {
+      books: [
+        { isbn: "978-89-1234-001", title: "클린 코드", author: "로버트 마틴", publisher: "인사이트", total: 5, available: 2 },
+        { isbn: "978-89-1234-002", title: "실용주의 프로그래머", author: "데이비드 토마스", publisher: "인사이트", total: 3, available: 0 },
+        { isbn: "978-89-1234-003", title: "리팩터링", author: "마틴 파울러", publisher: "한빛미디어", total: 4, available: 4 },
+        { isbn: "978-89-1234-004", title: "이펙티브 자바", author: "조슈아 블로크", publisher: "인사이트", total: 6, available: 3 },
+      ],
+      users: [
+        { id: "U-1001", name: "김도서", email: "kim@example.com", joined: "2023-01-15", status: "정상" },
+        { id: "U-1002", name: "이대출", email: "lee@example.com", joined: "2023-03-22", status: "정상" },
+        { id: "U-1003", name: "박연체", email: "park@example.com", joined: "2022-11-09", status: "제재" },
+      ],
+      loans: [
+        { id: "L-9001", title: "클린 코드", copyId: "C-50231", loanDate: "2024-05-01", dueDate: "2024-05-15", status: "대출중" },
+        { id: "L-9002", title: "이펙티브 자바", copyId: "C-50244", loanDate: "2024-04-20", dueDate: "2024-05-04", status: "연체" },
+      ],
+      overdue: [
+        { id: "U-1003", name: "박연체", book: "실용주의 프로그래머", days: 12, status: "제재중" },
+        { id: "U-1007", name: "최지연", book: "이펙티브 자바", days: 5, status: "경고" },
+      ],
+      history: [
+        { id: "H-3001", user: "김도서", book: "클린 코드", type: "대출", date: "2024-05-01 10:24" },
+        { id: "H-3002", user: "이대출", book: "리팩터링", type: "반납", date: "2024-05-01 14:11" },
+        { id: "H-3003", user: "박연체", book: "실용주의 프로그래머", type: "대출", date: "2024-04-22 09:02" },
+      ],
+    };
+
+    /* =========================================================================
+     *  탭 전환 로직
+     * ========================================================================= */
+    const TAB_META = {
+      books: { title: "도서 관리", subtitle: "도서 메타데이터와 사본을 관리합니다." },
+      users: { title: "회원 관리", subtitle: "회원 정보를 검색하고 추가합니다." },
+      loans: { title: "대출 / 반납", subtitle: "도서 대출과 반납, 연장을 처리합니다." },
+      admin: { title: "관리자 대시보드", subtitle: "연체 현황과 전체 이력을 확인합니다." },
+    };
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
+      document.getElementById("tab-" + tab).classList.remove("hidden");
+
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        const active = btn.dataset.tab === tab;
+        btn.classList.toggle("bg-brand-50", active);
+        btn.classList.toggle("text-brand-700", active);
+        btn.classList.toggle("text-slate-600", !active);
+      });
+
+      document.getElementById("page-title").textContent = TAB_META[tab].title;
+      document.getElementById("page-subtitle").textContent = TAB_META[tab].subtitle;
+      const mobile = document.getElementById("mobile-tab");
+      if (mobile.value !== tab) mobile.value = tab;
+    }
+
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+    document.getElementById("mobile-tab").addEventListener("change", (e) => switchTab(e.target.value));
+
+    /* =========================================================================
+     *  모달 제어
+     * ========================================================================= */
+    function openModal(id) { document.getElementById(id).hidden = false; }
+    function closeModal(id) { document.getElementById(id).hidden = true; }
+    // 배경 클릭 시 닫기
+    document.querySelectorAll("[id^='modal-']").forEach((m) => {
+      m.addEventListener("click", (e) => { if (e.target === m) m.hidden = true; });
+    });
+
+    /* =========================================================================
+     *  렌더링 유틸
+     * ========================================================================= */
+    function statusBadge(status) {
+      const map = {
+        "정상": "bg-green-100 text-green-700",
+        "대출중": "bg-blue-100 text-blue-700",
+        "연체": "bg-red-100 text-red-700",
+        "제재": "bg-red-100 text-red-700",
+        "제재중": "bg-red-100 text-red-700",
+        "경고": "bg-amber-100 text-amber-700",
+      };
+      const cls = map[status] || "bg-slate-100 text-slate-600";
+      return `<span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}">${status}</span>`;
+    }
+
+    /* ----- 도서 테이블 렌더 ----- */
+    function renderBooks(books) {
+      const tbody = document.getElementById("books-tbody");
+      if (!books.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">검색 결과가 없습니다.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = books.map((b) => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${b.isbn}</td>
+          <td class="px-4 py-3 font-medium">${b.title}</td>
+          <td class="px-4 py-3">${b.author}</td>
+          <td class="px-4 py-3 text-slate-500">${b.publisher}</td>
+          <td class="px-4 py-3 text-center">
+            <span class="font-medium">${b.available}</span>
+            <span class="text-slate-400"> / ${b.total}</span>
+          </td>
+        </tr>`).join("");
+    }
+
+    /* ----- 회원 테이블 렌더 ----- */
+    function renderUsers(users) {
+      const tbody = document.getElementById("users-tbody");
+      if (!users.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">검색 결과가 없습니다.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = users.map((u) => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${u.id}</td>
+          <td class="px-4 py-3 font-medium">${u.name}</td>
+          <td class="px-4 py-3 text-slate-500">${u.email}</td>
+          <td class="px-4 py-3 text-slate-500">${u.joined}</td>
+          <td class="px-4 py-3 text-center">${statusBadge(u.status)}</td>
+        </tr>`).join("");
+    }
+
+    /* ----- 대출 현황 테이블 렌더 ----- */
+    function renderLoans(loans) {
+      const tbody = document.getElementById("loans-tbody");
+      if (!loans.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">대출 내역이 없습니다.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = loans.map((l) => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${l.id}</td>
+          <td class="px-4 py-3 font-medium">${l.title}</td>
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${l.copyId}</td>
+          <td class="px-4 py-3 text-slate-500">${l.loanDate}</td>
+          <td class="px-4 py-3 text-slate-500">${l.dueDate}</td>
+          <td class="px-4 py-3 text-center">${statusBadge(l.status)}</td>
+          <td class="px-4 py-3 text-center">
+            <div class="flex justify-center gap-1.5">
+              <button onclick="returnLoan('${l.id}')" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">반납</button>
+              <button onclick="extendLoan('${l.id}')" class="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50">연장</button>
+            </div>
+          </td>
+        </tr>`).join("");
+    }
+
+    /* ----- 연체자 테이블 렌더 ----- */
+    function renderOverdue(rows) {
+      const tbody = document.getElementById("overdue-tbody");
+      tbody.innerHTML = rows.map((r) => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${r.id}</td>
+          <td class="px-4 py-3 font-medium">${r.name}</td>
+          <td class="px-4 py-3">${r.book}</td>
+          <td class="px-4 py-3 text-center font-medium text-red-600">${r.days}일</td>
+          <td class="px-4 py-3 text-center">${statusBadge(r.status)}</td>
+        </tr>`).join("");
+    }
+
+    /* ----- 이력 테이블 렌더 (append 지원) ----- */
+    function renderHistory(rows, append = false) {
+      const tbody = document.getElementById("history-tbody");
+      const html = rows.map((h) => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${h.id}</td>
+          <td class="px-4 py-3 font-medium">${h.user}</td>
+          <td class="px-4 py-3">${h.book}</td>
+          <td class="px-4 py-3">
+            <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${h.type === "대출" ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}">${h.type}</span>
+          </td>
+          <td class="px-4 py-3 text-slate-500">${h.date}</td>
+        </tr>`).join("");
+      if (append) tbody.insertAdjacentHTML("beforeend", html);
+      else tbody.innerHTML = html;
+    }
+
+    /* ---------- 도서 (Books) ---------- */
+    async function fetchBooks() {
+      const title = document.getElementById("book-search-title").value.trim();
+      const author = document.getElementById("book-search-author").value.trim();
+      try {
+        const res = await fetch(`${API_BASE}/books/search?title=${title}&author=${author}`);
+        const data = await res.json();
+        // 백엔드 반환값(metadata)을 프론트엔드 UI 구조에 맞춰 매핑한다
+        const mapped = data.map(b => ({
+            isbn: b.isbn, title: b.title, author: b.author, publisher: b.publisher, 
+            available: '-', total: '-' // 사본 집계는 상세 조회 뷰에서 처리하므로 표시에선 제외
+        }));
+        renderBooks(mapped);
+      } catch (err) { alert('도서 검색에 실패했다.'); }
+    }
+
+    async function createBook() {
+      const f = document.getElementById("form-book");
+      try {
+        // 1. 도서 메타데이터 선행 등록
+        const bookRes = await fetch(`${API_BASE}/books`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            isbn: f.isbn.value, title: f.title.value, author: f.author.value,
+            publisher: f.publisher.value, pub_year: 2024
+          }),
+        });
+        if(!bookRes.ok) throw new Error('메타데이터 등록 실패. ISBN 중복을 확인해라.');
+
+        // 2. 지정된 횟수만큼 사본(Copy) 생성 루프
+        const copies = Number(f.copies.value);
+        for(let i=0; i<copies; i++) {
+           await fetch(`${API_BASE}/books/${f.isbn.value}/copies`, { method: "POST" });
+        }
+        
+        alert('도서 및 사본 등록이 완벽하게 끝났다.');
+        fetchBooks();
+        closeModal("modal-book");
+        f.reset();
+      } catch (err) { alert(err.message); }
+    }
+
+    /* ---------- 회원 (Users) ---------- */
+    async function fetchUsers() {
+      const name = document.getElementById("user-search-name").value.trim();
+      try {
+        const res = await fetch(`${API_BASE}/users/search?name=${encodeURIComponent(name)}`);
+        const data = await res.json();
+        const mapped = data.map(u => ({
+          id: u.user_id, name: u.name, email: 'DB 설계 없음', // 네 놈이 스키마에 email을 안 넣었다.
+          joined: new Date(u.created_at).toISOString().slice(0, 10),
+          status: u.penalty_end_date && new Date(u.penalty_end_date) > new Date() ? '제재' : '정상'
+        }));
+        renderUsers(mapped);
+      } catch (err) { alert('회원 검색에 실패했다.'); }
+    }
+
+    async function createUser() {
+      const f = document.getElementById("form-user");
+      try {
+        const res = await fetch(`${API_BASE}/users`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: f.name.value }),
+        });
+        if(!res.ok) throw new Error('회원 추가 실패');
+        alert('새 회원이 등록되었다.');
+        fetchUsers();
+        closeModal("modal-user");
+        f.reset();
+      } catch (err) { alert(err.message); }
+    }
+
+    /* ---------- 대출 / 반납 (Loans) ---------- */
+    async function createLoan() {
+      const userId = document.getElementById("loan-user-id").value.trim();
+      const copyId = document.getElementById("loan-copy-id").value.trim();
+      if (!userId || !copyId) return alert("회원 ID와 사본 ID를 정확히 입력해라.");
+      
+      try {
+        const res = await fetch(`${API_BASE}/loans`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, copy_id: copyId }), // 백엔드 변수명에 맞춤
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error);
+        
+        alert('대출 트랜잭션 정상 승인.');
+        document.getElementById("loan-lookup-user-id").value = userId;
+        fetchUserLoans();
+      } catch (err) { alert(err.message); }
+    }
+
+    async function fetchUserLoans() {
+      const userId = document.getElementById("loan-lookup-user-id").value.trim();
+      if (!userId) return renderLoans([]);
+      
+      try {
+        // v0가 짠 엉성한 URL 대신 내가 만든 완벽한 집계 API를 호출한다.
+        const res = await fetch(`${API_BASE}/users/${userId}/current-loans`);
+        const data = await res.json();
+        const mapped = data.map(l => ({
+           id: l.loan_id, title: l.title, copyId: l.copy_id,
+           loanDate: new Date(l.loan_date).toISOString().slice(0, 10),
+           dueDate: new Date(l.due_date).toISOString().slice(0, 10),
+           status: l.overdue_days > 0 ? '연체' : '대출중'
+        }));
+        renderLoans(mapped);
+      } catch(err) { alert('대출 현황 조회 실패.'); }
+    }
+
+    async function returnLoan(loanId) {
+      try {
+        // HTTP 메서드를 POST가 아닌 PATCH로 찔러 넣어야만 작동한다.
+        const res = await fetch(`${API_BASE}/loans/${loanId}/return`, { method: "PATCH" });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error);
+        alert(data.message);
+        fetchUserLoans();
+      } catch(err) { alert(err.message); }
+    }
+
+    async function extendLoan(loanId) {
+      try {
+        const res = await fetch(`${API_BASE}/loans/${loanId}/extend`, { method: "PATCH" });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error);
+        alert(data.message);
+        fetchUserLoans();
+      } catch(err) { alert(err.message); }
+    }
+
+    /* ---------- 관리자 (Admin) ---------- */
+    async function fetchOverdue() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/penalties`);
+        const data = await res.json();
+        const mapped = data.data.map(u => ({
+          id: u.user_id, name: u.name, book: '다수 연체', // 유저별 집계이므로 생략
+          days: '-', status: '제재중'
+        }));
+        renderOverdue(mapped);
+      } catch(err) { console.error('제재 대상자 목록 호출 실패', err); }
+    }
+
+    let historyCursor = null; // 오프셋(OFFSET)을 버리고 커서(Cursor)를 사용한다
+    async function fetchHistory() {
+      try {
+        const url = historyCursor 
+            ? `${API_BASE}/admin/loans?cursor=${historyCursor}` 
+            : `${API_BASE}/admin/loans`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        const mapped = data.data.map(h => ({
+           id: h.loan_id, user: h.name, book: h.title,
+           type: h.status, 
+           date: new Date(h.loan_date).toISOString().slice(0, 16).replace('T', ' ')
+        }));
+        
+        // 첫 호출(cursor=null)이면 덮어쓰고, 이후엔 표에 이어붙인다.
+        renderHistory(mapped, historyCursor !== null);
+        
+        historyCursor = data.nextCursor;
+        if(!historyCursor) alert('더 이상 불러올 이력이 없는 마지막 구간이다.');
+      } catch(err) { console.error('이력 페이징 호출 실패', err); }
+    }
+
+    // 초기 실행
+    document.addEventListener("DOMContentLoaded", () => {
+      switchTab("books");
+      fetchBooks();
+      fetchUsers();
+      fetchOverdue();
+      fetchHistory();
+    });
