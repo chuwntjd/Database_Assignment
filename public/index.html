@@ -334,11 +334,6 @@
             <input name="publisher"
               class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
           </div>
-          <div>
-            <label class="mb-1 block text-xs font-medium text-slate-500">등록할 사본 수</label>
-            <input name="copies" type="number" min="1" value="1"
-              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-          </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="closeModal('modal-book')"
@@ -606,7 +601,13 @@
      *  모달 제어
      * ========================================================================= */
     function openModal(id) { document.getElementById(id).hidden = false; }
-    function closeModal(id) { document.getElementById(id).hidden = true; }
+    function closeModal(id) {
+    const m = document.getElementById(id);
+    if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
+}
     // 배경 클릭 시 닫기
     document.querySelectorAll("[id^='modal-']").forEach((m) => {
       m.addEventListener("click", (e) => { if (e.target === m) m.hidden = true; });
@@ -933,6 +934,10 @@
         alert('대출 트랜잭션 정상 승인.');
         document.getElementById("loan-lookup-user-id").value = userId;
         fetchUserLoans();
+
+        fetchBooks();
+        fetchAdminStats();
+        fetchHistory(true);
       } catch (err) { alert(err.message); }
     }
 
@@ -988,6 +993,7 @@
 
     let historyCursor = null;
     async function fetchHistory() {
+      if (reset) historyCursor = null;
       try {
         const url = historyCursor
           ? `${API_BASE}/admin/loans?cursor=${historyCursor}`
@@ -1001,10 +1007,9 @@
           date: new Date(h.loan_date).toISOString().slice(0, 16).replace('T', ' ')
         }));
 
-        renderHistory(mapped, historyCursor !== null);
+        renderHistory(mapped, !reset && historyCursor !== null);
 
         historyCursor = data.nextCursor;
-        if (!historyCursor) alert('더 이상 불러올 이력이 없습니다.');
       } catch (err) { console.error('이력 페이징 호출 실패', err); }
     }
 
