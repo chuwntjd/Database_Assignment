@@ -67,40 +67,33 @@ router.patch('/copies/:copy_id/status', async (req, res) => {
 router.get('/search', async (req, res) => {
     const { title, author } = req.query;
     try {
-        let query = 'SELECT isbn, title, author, publisher, pub_year FROM books WHERE 1=1';
+        let query = `
+            SELECT 
+                b.isbn, b.title, b.author, b.publisher, b.pub_year,
+                COUNT(bc.copy_id) AS total_copies,
+                COUNT(CASE WHEN bc.status = 'AVAILABLE' THEN 1 END) AS available_copies
+            FROM books b
+            LEFT JOIN book_copies bc ON b.isbn = bc.isbn
+            WHERE 1=1
+        `;
         const values = [];
         let idx = 1;
 
         if (title) {
-            query += ` AND title ILIKE $${idx++}`;
+            query += ` AND b.title ILIKE $${idx++}`;
             values.push(`%${title}%`);
         }
         if (author) {
-            query += ` AND author ILIKE $${idx++}`;
+            query += ` AND b.author ILIKE $${idx++}`;
             values.push(`%${author}%`);
         }
+
+        query += ` GROUP BY b.isbn ORDER BY b.title ASC`;
 
         const result = await db.query(query, values);
         res.status(200).json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: '도서 검색 쿼리 실행 실패' });
-    }
-});
-
-router.get('/copies/:copy_id/history', async (req, res) => {
-    const { copy_id } = req.params;
-    try {
-        const result = await db.query(
-            `SELECT l.loan_id, l.status, l.loan_date, l.due_date, l.return_date, u.user_id, u.name 
-             FROM loans l 
-             JOIN users u ON l.user_id = u.user_id 
-             WHERE l.copy_id = $1 
-             ORDER BY l.loan_date DESC`,
-            [copy_id]
-        );
-        res.status(200).json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: '사본 이력 조회 조인 실패' });
+        res.status(500).json({ error: '도서 검색 실패' });
     }
 });
 
@@ -114,25 +107,54 @@ router.get('/:isbn/copies/status', async (req, res) => {
                 l.loan_id,
                 l.status AS loan_status,
                 l.due_date,
-                CASE
-                    WHEN l.status = 'ACTIVE' AND l.due_date > CURRENT_TIMESTAMP 
-                        THEN CEIL(EXTRACT(EPOCH FROM (l.due_date - CURRENT_TIMESTAMP)) / 86400.0)
-                    ELSE 0
-                END AS remaining_days,
-                CASE
-                    WHEN l.status = 'ACTIVE' AND CURRENT_TIMESTAMP > l.due_date 
-                        THEN CEIL(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - l.due_date)) / 86400.0)
-                    ELSE 0
-                END AS overdue_days
+                CASE WHEN l.status = 'ACTIVE' AND l.due_date > CURRENT_TIMESTAMP THEN CEIL(EXTRACT(EPOCH FROM (l.due_date - CURRENT_TIMESTAMP)) / 86400.0) ELSE 0 END AS remaining_days
              FROM book_copies bc
              LEFT JOIN loans l ON bc.copy_id = l.copy_id AND l.status = 'ACTIVE'
-             WHERE bc.isbn = $1 AND bc.status = 'AVAILABLE'
+             WHERE bc.isbn = $1
              ORDER BY bc.copy_id ASC`,
             [isbn]
         );
         res.status(200).json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: '사본 상태 조회 쿼리 실행 실패' });
+        res.status(500).json({ error: '사본 상태 조회 실패' });
+    }
+});
+
+router.get('/copies/:copy_id/history', async (req, res) => {
+    const { copy_id } = req.params;
+    const limit = parseInt(req.query.limit) || 5;
+    const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
+    const search = req.query.search ? req.query.search.trim() : null;
+
+    try {
+        let query = `
+            SELECT l.loan_id, l.status, l.loan_date, l.due_date, l.return_date, u.user_id, u.name 
+            FROM loans l 
+            JOIN users u ON l.user_id = u.user_id 
+            WHERE l.copy_id = $1
+        `;
+        const values = [copy_id];
+        let paramIdx = 2;
+
+        if (cursor) {
+            query += ` AND l.loan_id < $${paramIdx++}`;
+            values.push(cursor);
+        }
+        if (search) {
+            query += ` AND (u.name ILIKE $${paramIdx} OR u.user_id::TEXT = $${paramIdx})`;
+            paramIdx++;
+            values.push(`%${search}%`);
+        }
+
+        query += ` ORDER BY l.loan_id DESC LIMIT $${paramIdx}`;
+        values.push(limit);
+
+        const result = await db.query(query, values);
+        const nextCursor = result.rows.length === limit ? result.rows[result.rows.length - 1].loan_id : null;
+
+        res.status(200).json({ data: result.rows, nextCursor });
+    } catch (err) {
+        res.status(500).json({ error: '도서 이력 조회 실패' });
     }
 });
 

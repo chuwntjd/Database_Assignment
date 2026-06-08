@@ -6,7 +6,9 @@ CREATE TABLE users (
     name VARCHAR(50) NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     penalty_end_date TIMESTAMPTZ NULL,
-    deleted_at TIMESTAMPTZ NULL
+    deleted_at TIMESTAMPTZ NULL,
+    email VARCHAR(100) UNIQUE NULL,
+    COLUMN phone VARCHAR(20) UNIQUE NULL
 );
 CREATE INDEX idx_users_active ON users(deleted_at) WHERE deleted_at IS NULL;
 
@@ -20,7 +22,7 @@ CREATE TABLE books (
 
 CREATE TABLE book_copies (
     copy_id SERIAL PRIMARY KEY,
-    isbn CHAR(13) NOT NULL REFERENCES books(isbn) ON DELETE CASCADE
+    isbn CHAR(13) NOT NULL REFERENCES books(isbn) ON DELETE CASCADE,
     status copy_status_type NOT NULL DEFAULT 'AVAILABLE'
 );
 

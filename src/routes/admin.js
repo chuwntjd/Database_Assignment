@@ -73,4 +73,22 @@ router.get('/loans', async (req, res) => {
     }
 });
 
+router.get('/stats', async (req, res) => {
+    try {
+        const activeLoans = await db.query("SELECT COUNT(*) FROM loans WHERE status = 'ACTIVE'");
+        const overdueLoans = await db.query("SELECT COUNT(*) FROM loans WHERE status = 'ACTIVE' AND due_date < CURRENT_TIMESTAMP");
+        const totalUsers = await db.query("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL");
+        const totalCopies = await db.query("SELECT COUNT(*) FROM book_copies WHERE status = 'AVAILABLE'");
+
+        res.status(200).json({
+            activeLoans: parseInt(activeLoans.rows[0].count),
+            overdueLoans: parseInt(overdueLoans.rows[0].count),
+            totalUsers: parseInt(totalUsers.rows[0].count),
+            totalCopies: parseInt(totalCopies.rows[0].count)
+        });
+    } catch (err) {
+        res.status(500).json({ error: '통계 데이터 집계 실패' });
+    }
+});
+
 module.exports = router;

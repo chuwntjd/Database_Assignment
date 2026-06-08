@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" class="bg-slate-50">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,9 +30,19 @@
   </script>
   <style>
     /* 스크롤바 살짝 정리 */
-    ::-webkit-scrollbar { height: 8px; width: 8px; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-    [hidden] { display: none !important; }
+    ::-webkit-scrollbar {
+      height: 8px;
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -42,27 +53,43 @@
       <div class="flex h-16 items-center gap-2 border-b border-slate-200 px-6">
         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
         <span class="text-lg font-semibold tracking-tight">LibraryOS</span>
       </div>
 
       <nav id="sidebar-nav" class="flex flex-1 flex-col gap-1 p-3">
-        <button data-tab="books" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <button data-tab="books"
+          class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
           도서 관리
         </button>
-        <button data-tab="users" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4z"/></svg>
+        <button data-tab="users"
+          class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4z" />
+          </svg>
           회원 관리
         </button>
-        <button data-tab="loans" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        <button data-tab="loans"
+          class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
           대출 / 반납
         </button>
-        <button data-tab="admin" class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <button data-tab="admin"
+          class="nav-btn flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
           관리자 대시보드
         </button>
       </nav>
@@ -95,22 +122,28 @@
         <section id="tab-books" class="tab-panel space-y-6">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex flex-1 flex-col gap-2 sm:flex-row">
-              <input id="book-search-title" type="text" placeholder="제목 검색..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-              <input id="book-search-author" type="text" placeholder="저자 검색..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-              <button onclick="fetchBooks()" class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
+              <input id="book-search-title" type="text" placeholder="제목 검색..."
+                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <input id="book-search-author" type="text" placeholder="저자 검색..."
+                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <button onclick="fetchBooks()"
+                class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
             </div>
-            <button onclick="openModal('modal-book')" class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">+ 도서 등록</button>
+            <button onclick="openModal('modal-book')"
+              class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">+
+              도서 등록</button>
           </div>
 
           <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
-              <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th class="px-4 py-3">ISBN</th>
-                  <th class="px-4 py-3">제목</th>
-                  <th class="px-4 py-3">저자</th>
-                  <th class="px-4 py-3">출판사</th>
-                  <th class="px-4 py-3 text-center">보유/대출가능</th>
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50 text-left">
+                  <th class="p-3 text-xs font-medium text-slate-500">ISBN</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">제목</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">저자</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">출판사</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">대출가능/보유</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">관리</th>
                 </tr>
               </thead>
               <tbody id="books-tbody" class="divide-y divide-slate-100"></tbody>
@@ -122,21 +155,27 @@
         <section id="tab-users" class="tab-panel hidden space-y-6">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex flex-1 flex-col gap-2 sm:flex-row">
-              <input id="user-search-name" type="text" placeholder="회원 이름 검색..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-              <button onclick="fetchUsers()" class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
+              <input id="user-search-name" type="text" placeholder="회원 이름 검색..."
+                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <button onclick="fetchUsers()"
+                class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
             </div>
-            <button onclick="openModal('modal-user')" class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">+ 회원 추가</button>
+            <button onclick="openModal('modal-user')"
+              class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">+
+              회원 추가</button>
           </div>
 
           <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
-              <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th class="px-4 py-3">회원 ID</th>
-                  <th class="px-4 py-3">이름</th>
-                  <th class="px-4 py-3">이메일</th>
-                  <th class="px-4 py-3">가입일</th>
-                  <th class="px-4 py-3 text-center">상태</th>
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50 text-left">
+                  <th class="p-3 text-xs font-medium text-slate-500">ID</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">이름</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">이메일</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">연락처</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">가입일</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">상태</th>
+                  <th class="p-3 text-xs font-medium text-slate-500">관리</th>
                 </tr>
               </thead>
               <tbody id="users-tbody" class="divide-y divide-slate-100"></tbody>
@@ -152,13 +191,16 @@
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
               <div class="flex-1">
                 <label class="mb-1 block text-xs font-medium text-slate-500">회원 ID</label>
-                <input id="loan-user-id" type="text" placeholder="예: U-1001" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                <input id="loan-user-id" type="number" placeholder="예: 1,2,3..."
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
               </div>
               <div class="flex-1">
                 <label class="mb-1 block text-xs font-medium text-slate-500">도서 사본 ID</label>
-                <input id="loan-copy-id" type="text" placeholder="예: C-50231" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                <input id="loan-copy-id" type="number" placeholder="예: 1,2,3..."
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
               </div>
-              <button onclick="createLoan()" class="rounded-lg bg-brand-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-700">대출</button>
+              <button onclick="createLoan()"
+                class="rounded-lg bg-brand-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-brand-700">대출</button>
             </div>
           </div>
 
@@ -167,8 +209,10 @@
             <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 class="text-sm font-semibold text-slate-700">회원 대출 현황</h2>
               <div class="flex gap-2">
-                <input id="loan-lookup-user-id" type="text" placeholder="조회할 회원 ID" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-                <button onclick="fetchUserLoans()" class="rounded-lg bg-slate-900 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-slate-700">조회</button>
+                <input id="loan-lookup-user-id" type="text" placeholder="조회할 회원 ID"
+                  class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                <button onclick="fetchUserLoans()"
+                  class="rounded-lg bg-slate-900 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-slate-700">조회</button>
               </div>
             </div>
 
@@ -197,19 +241,19 @@
           <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <div class="rounded-xl border border-slate-200 bg-white p-4">
               <p class="text-xs font-medium text-slate-500">총 대출 중</p>
-              <p class="mt-1 text-2xl font-semibold">128</p>
+              <p id="stat-active-loans" class="mt-1 text-2xl font-semibold">-</p>
             </div>
             <div class="rounded-xl border border-slate-200 bg-white p-4">
               <p class="text-xs font-medium text-slate-500">연체 건수</p>
-              <p class="mt-1 text-2xl font-semibold text-red-600">14</p>
+              <p id="stat-overdue" class="mt-1 text-2xl font-semibold text-red-600">-</p>
             </div>
             <div class="rounded-xl border border-slate-200 bg-white p-4">
               <p class="text-xs font-medium text-slate-500">등록 회원</p>
-              <p class="mt-1 text-2xl font-semibold">2,341</p>
+              <p id="stat-users" class="mt-1 text-2xl font-semibold">-</p>
             </div>
             <div class="rounded-xl border border-slate-200 bg-white p-4">
-              <p class="text-xs font-medium text-slate-500">보유 도서</p>
-              <p class="mt-1 text-2xl font-semibold">9,872</p>
+              <p class="text-xs font-medium text-slate-500">대출 가능 도서</p>
+              <p id="stat-copies" class="mt-1 text-2xl font-semibold">-</p>
             </div>
           </div>
 
@@ -250,7 +294,9 @@
               </table>
             </div>
             <div class="mt-4 flex justify-center">
-              <button onclick="fetchHistory()" class="rounded-lg border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">다음 페이지 불러오기</button>
+              <button onclick="fetchHistory()"
+                class="rounded-lg border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">다음
+                페이지 불러오기</button>
             </div>
           </div>
         </section>
@@ -270,30 +316,131 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-500">제목</label>
-            <input name="title" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            <input name="title" required
+              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
           </div>
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-500">저자</label>
-            <input name="author" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            <input name="author" required
+              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
           </div>
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-500">ISBN</label>
-            <input name="isbn" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            <input name="isbn"
+              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
           </div>
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-500">출판사</label>
-            <input name="publisher" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            <input name="publisher"
+              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
           </div>
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-500">등록할 사본 수</label>
-            <input name="copies" type="number" min="1" value="1" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            <input name="copies" type="number" min="1" value="1"
+              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal('modal-book')" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">취소</button>
-          <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">등록</button>
+          <button type="button" onclick="closeModal('modal-book')"
+            class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">취소</button>
+          <button type="submit"
+            class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">등록</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div id="modal-book-details" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+    <div class="w-full max-w-4xl rounded-xl bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4 border-b pb-3 border-slate-200">
+        <h2 class="text-xl font-bold text-slate-800">도서 상세 및 사본 관리</h2>
+        <button onclick="closeModal('modal-book-details')"
+          class="text-slate-400 hover:text-slate-600 text-2xl font-bold">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <h3 class="text-md font-bold mb-3 text-brand-700">메타데이터 수정</h3>
+          <form id="form-book-edit" onsubmit="event.preventDefault(); updateBookMeta();" class="space-y-3">
+            <input type="hidden" id="edit-book-isbn" />
+            <div><label class="block text-xs font-medium text-slate-500">제목</label><input id="edit-book-title"
+                type="text" class="w-full rounded border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500" required>
+            </div>
+            <div><label class="block text-xs font-medium text-slate-500">저자</label><input id="edit-book-author"
+                type="text" class="w-full rounded border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500" required>
+            </div>
+            <div><label class="block text-xs font-medium text-slate-500">출판사</label><input id="edit-book-publisher"
+                type="text" class="w-full rounded border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500" required>
+            </div>
+            <div><label class="block text-xs font-medium text-slate-500">출판연도</label><input id="edit-book-pubyear"
+                type="number" class="w-full rounded border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500"
+                required></div>
+            <button type="submit"
+              class="w-full bg-brand-600 text-white py-2 rounded-lg font-bold hover:bg-brand-700 transition-colors mt-2">정보
+              갱신</button>
+          </form>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-md font-bold text-slate-800">소장 사본 목록</h3>
+            <button onclick="addBookCopy()"
+              class="bg-slate-800 text-white px-3 py-1.5 text-xs font-bold rounded hover:bg-slate-700 transition-colors">+
+              사본 1개 추가</button>
+          </div>
+          <div class="overflow-y-auto max-h-72 border border-slate-200 rounded-lg bg-white shadow-sm">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+              <thead class="bg-slate-100 sticky top-0 border-b border-slate-200">
+                <tr>
+                  <th class="p-2 font-semibold">Copy ID</th>
+                  <th class="p-2 font-semibold">상태</th>
+                  <th class="p-2 font-semibold">대출현황</th>
+                  <th class="p-2 font-semibold">관리</th>
+                </tr>
+              </thead>
+              <tbody id="book-copies-tbody" class="divide-y divide-slate-100">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-copy-history" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40">
+    <div class="w-full max-w-3xl rounded-xl bg-white p-5 shadow-xl max-h-[80vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3 border-b pb-2">
+        <h2 class="text-md font-bold text-slate-900">사본 <span id="target-copy-id-span"
+            class="font-mono text-brand-600"></span> 대출 기록</h2>
+        <button onclick="closeModal('modal-copy-history')"
+          class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+      </div>
+      <div class="flex gap-2 mb-3">
+        <input id="copy-history-search-input" type="text" placeholder="유저 이름 또는 회원 ID 입력"
+          class="rounded border px-3 py-1 text-xs flex-1">
+        <button onclick="searchCopyHistory()"
+          class="bg-slate-800 text-white px-3 py-1 text-xs font-bold rounded hover:bg-slate-700">검색</button>
+      </div>
+      <div class="overflow-x-auto border border-slate-200 rounded-lg">
+        <table class="w-full text-left text-xs divide-y divide-slate-200">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="p-2">Loan ID</th>
+              <th class="p-2">회원 ID</th>
+              <th class="p-2">회원명</th>
+              <th class="p-2">대출일</th>
+              <th class="p-2">반납일</th>
+              <th class="p-2">상태</th>
+            </tr>
+          </thead>
+          <tbody id="copy-history-tbody"></tbody>
+        </table>
+      </div>
+      <div class="mt-3 text-center">
+        <button id="btn-copy-history-more" onclick="loadMoreCopyHistory()"
+          class="hidden bg-slate-100 text-slate-700 border border-slate-300 px-4 py-1.5 text-xs font-bold rounded hover:bg-slate-200">↓
+          기록 더 보기</button>
+      </div>
     </div>
   </div>
 
@@ -307,21 +454,110 @@
       <form id="form-user" onsubmit="event.preventDefault(); createUser();" class="space-y-4">
         <div>
           <label class="mb-1 block text-xs font-medium text-slate-500">이름</label>
-          <input name="name" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          <input name="name" required
+            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
         </div>
         <div>
           <label class="mb-1 block text-xs font-medium text-slate-500">이메일</label>
-          <input name="email" type="email" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          <input name="email" type="email" required
+            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
         </div>
         <div>
           <label class="mb-1 block text-xs font-medium text-slate-500">연락처</label>
-          <input name="phone" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          <input name="phone"
+            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
         </div>
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal('modal-user')" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">취소</button>
-          <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">추가</button>
+          <button type="button" onclick="closeModal('modal-user')"
+            class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">취소</button>
+          <button type="submit"
+            class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">추가</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div id="modal-user-details" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+    <div class="w-full max-w-4xl rounded-xl bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4 border-b pb-3 border-slate-200">
+        <h2 class="text-xl font-bold text-slate-800">회원 상세 정보 및 관리</h2>
+        <button onclick="closeModal('modal-user-details')"
+          class="text-slate-400 hover:text-slate-600 text-2xl font-bold">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 col-span-1">
+          <h3 class="text-sm font-bold mb-2 text-brand-700">인적사항 관리</h3>
+          <form id="form-user-edit" onsubmit="event.preventDefault(); updateUserMeta();" class="space-y-2">
+            <input type="hidden" id="edit-user-id" />
+            <div><label class="block text-xs font-medium text-slate-500">이름</label><input id="edit-user-name"
+                type="text" class="w-full rounded border px-2 py-1 text-sm"></div>
+            <div><label class="block text-xs font-medium text-slate-500">이메일</label><input id="edit-user-email"
+                type="text" class="w-full rounded border px-2 py-1 text-sm"></div>
+            <div><label class="block text-xs font-medium text-slate-500">연락처</label><input id="edit-user-phone"
+                type="text" class="w-full rounded border px-2 py-1 text-sm"></div>
+            <div class="pt-2">
+              <span class="text-xs font-medium text-slate-500">현재 상태:</span>
+              <span id="edit-user-status-badge" class="text-xs font-bold px-2 py-0.5 rounded-full">-</span>
+            </div>
+            <div class="flex space-x-2 pt-2">
+              <button type="submit"
+                class="flex-1 bg-brand-600 text-white py-1.5 rounded text-xs font-bold hover:bg-brand-700">수정</button>
+              <button type="button" onclick="triggerDeleteUserFromModal()"
+                class="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-red-700">삭제</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="border border-slate-200 rounded-lg p-4 col-span-2">
+          <h3 class="text-sm font-bold mb-2 text-slate-800">현재 대출 중인 도서</h3>
+          <div class="overflow-x-auto max-h-48">
+            <table class="w-full text-left text-xs divide-y divide-slate-100">
+              <thead>
+                <tr class="text-slate-500 bg-slate-50">
+                  <th class="p-2">사본 ID</th>
+                  <th class="p-2">도서명</th>
+                  <th class="p-2">반납기한</th>
+                  <th class="p-2">관리</th>
+                </tr>
+              </thead>
+              <tbody id="user-active-loans-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t pt-4 border-slate-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+          <h3 class="text-md font-bold text-slate-900">대출 기록 검색</h3>
+          <div class="flex gap-2">
+            <input id="user-history-search-input" type="text" placeholder="도서명 또는 ISBN 입력"
+              class="rounded border px-3 py-1 text-xs w-64 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            <button onclick="searchUserHistory()"
+              class="bg-slate-800 text-white px-3 py-1 text-xs font-bold rounded hover:bg-slate-700">검색</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+          <table class="w-full text-left text-xs divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="p-2.5">Loan ID</th>
+                <th class="p-2.5">사본 ID</th>
+                <th class="p-2.5">도서 제목</th>
+                <th class="p-2.5">대출일</th>
+                <th class="p-2.5">반납일</th>
+                <th class="p-2.5">상태</th>
+              </tr>
+            </thead>
+            <tbody id="user-history-tbody"></tbody>
+          </table>
+        </div>
+        <div class="mt-3 text-center">
+          <button id="btn-user-history-more" onclick="loadMoreUserHistory()"
+            class="hidden bg-slate-100 text-slate-700 border border-slate-300 px-4 py-1.5 text-xs font-bold rounded hover:bg-slate-200 transition-colors">↓
+            기록 더 보기</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -333,37 +569,6 @@
      *  설정
      * ========================================================================= */
     const API_BASE = "http://localhost:3000";
-
-    /* =========================================================================
-     *  Mock 데이터 (백엔드 연동 전, 화면 확인용)
-     *  실제 연동 시 fetch 함수에서 이 데이터를 응답값으로 대체하면 됩니다.
-     * ========================================================================= */
-    const MOCK = {
-      books: [
-        { isbn: "978-89-1234-001", title: "클린 코드", author: "로버트 마틴", publisher: "인사이트", total: 5, available: 2 },
-        { isbn: "978-89-1234-002", title: "실용주의 프로그래머", author: "데이비드 토마스", publisher: "인사이트", total: 3, available: 0 },
-        { isbn: "978-89-1234-003", title: "리팩터링", author: "마틴 파울러", publisher: "한빛미디어", total: 4, available: 4 },
-        { isbn: "978-89-1234-004", title: "이펙티브 자바", author: "조슈아 블로크", publisher: "인사이트", total: 6, available: 3 },
-      ],
-      users: [
-        { id: "U-1001", name: "김도서", email: "kim@example.com", joined: "2023-01-15", status: "정상" },
-        { id: "U-1002", name: "이대출", email: "lee@example.com", joined: "2023-03-22", status: "정상" },
-        { id: "U-1003", name: "박연체", email: "park@example.com", joined: "2022-11-09", status: "제재" },
-      ],
-      loans: [
-        { id: "L-9001", title: "클린 코드", copyId: "C-50231", loanDate: "2024-05-01", dueDate: "2024-05-15", status: "대출중" },
-        { id: "L-9002", title: "이펙티브 자바", copyId: "C-50244", loanDate: "2024-04-20", dueDate: "2024-05-04", status: "연체" },
-      ],
-      overdue: [
-        { id: "U-1003", name: "박연체", book: "실용주의 프로그래머", days: 12, status: "제재중" },
-        { id: "U-1007", name: "최지연", book: "이펙티브 자바", days: 5, status: "경고" },
-      ],
-      history: [
-        { id: "H-3001", user: "김도서", book: "클린 코드", type: "대출", date: "2024-05-01 10:24" },
-        { id: "H-3002", user: "이대출", book: "리팩터링", type: "반납", date: "2024-05-01 14:11" },
-        { id: "H-3003", user: "박연체", book: "실용주의 프로그래머", type: "대출", date: "2024-04-22 09:02" },
-      ],
-    };
 
     /* =========================================================================
      *  탭 전환 로직
@@ -425,39 +630,42 @@
 
     /* ----- 도서 테이블 렌더 ----- */
     function renderBooks(books) {
-      const tbody = document.getElementById("books-tbody");
-      if (!books.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">검색 결과가 없습니다.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = books.map((b) => `
-        <tr class="hover:bg-slate-50">
-          <td class="px-4 py-3 font-mono text-xs text-slate-500">${b.isbn}</td>
-          <td class="px-4 py-3 font-medium">${b.title}</td>
-          <td class="px-4 py-3">${b.author}</td>
-          <td class="px-4 py-3 text-slate-500">${b.publisher}</td>
-          <td class="px-4 py-3 text-center">
-            <span class="font-medium">${b.available}</span>
-            <span class="text-slate-400"> / ${b.total}</span>
+      const tbody = document.querySelector("#tab-books tbody");
+      if (!tbody) return;
+      tbody.innerHTML = books.map(b => `
+        <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+          <td class="p-3 text-sm text-slate-600">${b.isbn}</td>
+          <td class="p-3 text-sm font-bold text-slate-900">${b.title}</td>
+          <td class="p-3 text-sm text-slate-800">${b.author}</td>
+          <td class="p-3 text-sm text-slate-800">${b.publisher}</td>
+          <td class="p-3 text-sm font-bold text-brand-600">${b.available_copies || 0} / <span class="text-slate-500">${b.total_copies || 0}</span></td>
+          <td class="p-3 text-sm">
+            <button onclick="openBookDetails('${b.isbn}', '${b.title.replace(/'/g, "\\'")}', '${b.author.replace(/'/g, "\\'")}', '${b.publisher.replace(/'/g, "\\'")}', ${b.pub_year})" class="bg-brand-100 text-brand-700 px-3 py-1 rounded text-xs font-bold hover:bg-brand-200">조회/관리</button>
           </td>
-        </tr>`).join("");
+        </tr>
+      `).join('');
     }
 
     /* ----- 회원 테이블 렌더 ----- */
+
     function renderUsers(users) {
-      const tbody = document.getElementById("users-tbody");
-      if (!users.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">검색 결과가 없습니다.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = users.map((u) => `
-        <tr class="hover:bg-slate-50">
-          <td class="px-4 py-3 font-mono text-xs text-slate-500">${u.id}</td>
-          <td class="px-4 py-3 font-medium">${u.name}</td>
-          <td class="px-4 py-3 text-slate-500">${u.email}</td>
-          <td class="px-4 py-3 text-slate-500">${u.joined}</td>
-          <td class="px-4 py-3 text-center">${statusBadge(u.status)}</td>
-        </tr>`).join("");
+      const tbody = document.querySelector("#tab-users tbody");
+      if (!tbody) return;
+      tbody.innerHTML = users.map(u => `
+        <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+          <td class="p-3 text-sm text-slate-800">${u.id}</td>
+          <td class="p-3 text-sm font-bold text-slate-900">${u.name}</td>
+          <td class="p-3 text-sm text-slate-600">${u.email}</td>
+          <td class="p-3 text-sm text-slate-600">${u.phone}</td>
+          <td class="p-3 text-sm text-slate-500">${u.joined}</td>
+          <td class="p-3 text-sm">
+            <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold ${u.status === '정상' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${u.status}</span>
+          </td>
+          <td class="p-3 text-sm">
+            <button onclick="openUserDetails(${u.id}, '${u.name.replace(/'/g, "\\'")}', '${u.email}', '${u.phone}', '${u.status}')" class="bg-brand-100 text-brand-700 px-3 py-1 rounded text-xs font-bold hover:bg-brand-200">조회/관리</button>
+          </td>
+        </tr>
+      `).join('');
     }
 
     /* ----- 대출 현황 테이블 렌더 ----- */
@@ -514,6 +722,13 @@
       else tbody.innerHTML = html;
     }
 
+    /* =========================================================================
+     *  ★ 백엔드 연동용 fetch 함수 뼈대 ★
+     *  현재는 Mock 데이터를 렌더링합니다.
+     *  실제 서버 연동 시 주석 처리된 fetch 블록을 활성화하고
+     *  render*() 호출에 응답 데이터를 넘기면 됩니다.
+     * ========================================================================= */
+
     /* ---------- 도서 (Books) ---------- */
     async function fetchBooks() {
       const title = document.getElementById("book-search-title").value.trim();
@@ -521,20 +736,14 @@
       try {
         const res = await fetch(`${API_BASE}/books/search?title=${title}&author=${author}`);
         const data = await res.json();
-        // 백엔드 반환값(metadata)을 프론트엔드 UI 구조에 맞춰 매핑한다
-        const mapped = data.map(b => ({
-            isbn: b.isbn, title: b.title, author: b.author, publisher: b.publisher, 
-            available: '-', total: '-' // 사본 집계는 상세 조회 뷰에서 처리하므로 표시에선 제외
-        }));
-        renderBooks(mapped);
-      } catch (err) { alert('도서 검색에 실패했다.'); }
+        renderBooks(data);
+      } catch (err) { alert('도서 검색에 실패했습니다.'); }
     }
 
     async function createBook() {
       const f = document.getElementById("form-book");
       try {
-        // 1. 도서 메타데이터 선행 등록
-        const bookRes = await fetch(`${API_BASE}/books`, {
+        const res = await fetch(`${API_BASE}/books`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -542,18 +751,94 @@
             publisher: f.publisher.value, pub_year: 2024
           }),
         });
-        if(!bookRes.ok) throw new Error('메타데이터 등록 실패. ISBN 중복을 확인해라.');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '메타데이터 등록에 실패했습니다.');
 
-        // 2. 지정된 횟수만큼 사본(Copy) 생성 루프
-        const copies = Number(f.copies.value);
-        for(let i=0; i<copies; i++) {
-           await fetch(`${API_BASE}/books/${f.isbn.value}/copies`, { method: "POST" });
-        }
-        
-        alert('도서 및 사본 등록이 완벽하게 끝났다.');
+        alert('메타데이터가 등록되었습니다. 도서관 내 사본은 메타데이터 조회를 통해 추가해주세요.');
         fetchBooks();
+        fetchAdminStats();
         closeModal("modal-book");
         f.reset();
+      } catch (err) { alert(err.message); }
+    }
+
+    async function openBookDetails(isbn, title, author, publisher, pub_year) {
+      document.getElementById('edit-book-isbn').value = isbn;
+      document.getElementById('edit-book-title').value = title;
+      document.getElementById('edit-book-author').value = author;
+      document.getElementById('edit-book-publisher').value = publisher;
+      document.getElementById('edit-book-pubyear').value = pub_year;
+
+      await loadBookCopies(isbn);
+
+      const modal = document.getElementById('modal-book-details');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    async function loadBookCopies(isbn) {
+      try {
+        const res = await fetch(`${API_BASE}/books/${isbn}/copies/status`);
+        const data = await res.json();
+        const tbody = document.getElementById("book-copies-tbody");
+
+        tbody.innerHTML = data.map(c => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2 text-slate-600 font-mono">${c.copy_id}</td>
+            <td class="p-2"><span class="px-2 py-1 text-xs font-bold rounded-full ${c.copy_status === 'AVAILABLE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${c.copy_status}</span></td>
+            <td class="p-2 text-xs font-medium ${c.loan_status === 'ACTIVE' ? 'text-orange-600' : 'text-slate-500'}">${c.loan_status === 'ACTIVE' ? `대출중 (${c.remaining_days}일 남음)` : '창고 보관중'}</td>
+            <td class="p-2 flex space-x-1">
+              <button onclick="toggleCopyStatus(${c.copy_id}, '${c.copy_status}')" class="bg-slate-200 text-slate-700 px-2 py-1 text-xs font-bold rounded hover:bg-slate-300">상태반전</button>
+              <button onclick="openCopyHistoryModal(${c.copy_id})" class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 text-xs font-bold rounded hover:bg-blue-100">이력 조회</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) { console.error('사본 로드에 실패했습니다.', err); }
+    }
+
+    async function updateBookMeta() {
+      const isbn = document.getElementById('edit-book-isbn').value;
+      try {
+        const res = await fetch(`${API_BASE}/books/${isbn}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: document.getElementById('edit-book-title').value,
+            author: document.getElementById('edit-book-author').value,
+            publisher: document.getElementById('edit-book-publisher').value,
+            pub_year: document.getElementById('edit-book-pubyear').value
+          })
+        });
+        if (!res.ok) throw new Error('수정 권한 거부됨');
+        alert('도서 메타데이터가 갱신되었습니다.');
+        fetchBooks();
+      } catch (err) { alert(err.message); }
+    }
+
+    async function addBookCopy() {
+      const isbn = document.getElementById('edit-book-isbn').value;
+      try {
+        const res = await fetch(`${API_BASE}/books/${isbn}/copies`, { method: 'POST' });
+        if (!res.ok) throw new Error('사본 추가 실패');
+        await loadBookCopies(isbn);
+        fetchBooks();
+        fetchAdminStats();
+      } catch (err) { alert(err.message); }
+    }
+
+    async function toggleCopyStatus(copyId, currentStatus) {
+      const isbn = document.getElementById('edit-book-isbn').value;
+      const nextStatus = currentStatus === 'AVAILABLE' ? 'UNAVAILABLE' : 'AVAILABLE';
+      try {
+        const res = await fetch(`${API_BASE}/books/copies/${copyId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: nextStatus })
+        });
+        if (!res.ok) throw new Error('상태 갱신 실패');
+        await loadBookCopies(isbn);
+        fetchBooks();
+        fetchAdminStats();
       } catch (err) { alert(err.message); }
     }
 
@@ -564,12 +849,15 @@
         const res = await fetch(`${API_BASE}/users/search?name=${encodeURIComponent(name)}`);
         const data = await res.json();
         const mapped = data.map(u => ({
-          id: u.user_id, name: u.name, email: 'DB 설계 없음', // 네 놈이 스키마에 email을 안 넣었다.
+          id: u.user_id,
+          name: u.name,
+          email: u.email || '-',
+          phone: u.phone || '-',
           joined: new Date(u.created_at).toISOString().slice(0, 10),
           status: u.penalty_end_date && new Date(u.penalty_end_date) > new Date() ? '제재' : '정상'
         }));
         renderUsers(mapped);
-      } catch (err) { alert('회원 검색에 실패했다.'); }
+      } catch (err) { alert('회원 검색에 실패했습니다.'); }
     }
 
     async function createUser() {
@@ -578,13 +866,52 @@
         const res = await fetch(`${API_BASE}/users`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: f.name.value }),
+          body: JSON.stringify({
+            name: f.name.value,
+            email: f.email ? f.email.value.trim() : null,
+            phone: f.phone ? f.phone.value.trim() : null
+          }),
         });
-        if(!res.ok) throw new Error('회원 추가 실패');
-        alert('새 회원이 등록되었다.');
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || '회원 추가 실패');
+
+        alert('새 회원이 등록되었습니다.');
         fetchUsers();
+        fetchAdminStats();
         closeModal("modal-user");
         f.reset();
+      } catch (err) { alert(err.message); }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('회원을 삭제하시겠습니까??')) return;
+      try {
+        const res = await fetch(`${API_BASE}/users/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        alert('회원이 삭제되었습니다.');
+        fetchUsers();
+        fetchAdminStats();
+      } catch (err) { alert(err.message); }
+    }
+
+    async function editUser(id, oldName, oldEmail, oldPhone) {
+      const newName = prompt('새 이름을 입력해주세요:', oldName);
+      if (!newName) return;
+      const newEmail = prompt('새 이메일을 입력해주세요:', oldEmail !== '-' ? oldEmail : '');
+      const newPhone = prompt('새 연락처를 입력해주세요:', oldPhone !== '-' ? oldPhone : '');
+
+      try {
+        const res = await fetch(`${API_BASE}/users/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName, email: newEmail, phone: newPhone })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        alert('회원 정보 수정이 완료되었습니다.');
+        fetchUsers();
       } catch (err) { alert(err.message); }
     }
 
@@ -592,17 +919,17 @@
     async function createLoan() {
       const userId = document.getElementById("loan-user-id").value.trim();
       const copyId = document.getElementById("loan-copy-id").value.trim();
-      if (!userId || !copyId) return alert("회원 ID와 사본 ID를 정확히 입력해라.");
-      
+      if (!userId || !copyId) return alert("회원 ID와 사본 ID를 정확히 입력해주세요.");
+
       try {
         const res = await fetch(`${API_BASE}/loans`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: userId, copy_id: copyId }), // 백엔드 변수명에 맞춤
+          body: JSON.stringify({ user_id: userId, copy_id: copyId }),
         });
         const data = await res.json();
-        if(!res.ok) throw new Error(data.error);
-        
+        if (!res.ok) throw new Error(data.error);
+
         alert('대출 트랜잭션 정상 승인.');
         document.getElementById("loan-lookup-user-id").value = userId;
         fetchUserLoans();
@@ -612,40 +939,38 @@
     async function fetchUserLoans() {
       const userId = document.getElementById("loan-lookup-user-id").value.trim();
       if (!userId) return renderLoans([]);
-      
+
       try {
-        // v0가 짠 엉성한 URL 대신 내가 만든 완벽한 집계 API를 호출한다.
         const res = await fetch(`${API_BASE}/users/${userId}/current-loans`);
         const data = await res.json();
         const mapped = data.map(l => ({
-           id: l.loan_id, title: l.title, copyId: l.copy_id,
-           loanDate: new Date(l.loan_date).toISOString().slice(0, 10),
-           dueDate: new Date(l.due_date).toISOString().slice(0, 10),
-           status: l.overdue_days > 0 ? '연체' : '대출중'
+          id: l.loan_id, title: l.title, copyId: l.copy_id,
+          loanDate: new Date(l.loan_date).toISOString().slice(0, 10),
+          dueDate: new Date(l.due_date).toISOString().slice(0, 10),
+          status: l.overdue_days > 0 ? '연체' : '대출중'
         }));
         renderLoans(mapped);
-      } catch(err) { alert('대출 현황 조회 실패.'); }
+      } catch (err) { alert('대출 현황 조회 실패.'); }
     }
 
     async function returnLoan(loanId) {
       try {
-        // HTTP 메서드를 POST가 아닌 PATCH로 찔러 넣어야만 작동한다.
         const res = await fetch(`${API_BASE}/loans/${loanId}/return`, { method: "PATCH" });
         const data = await res.json();
-        if(!res.ok) throw new Error(data.error);
+        if (!res.ok) throw new Error(data.error);
         alert(data.message);
         fetchUserLoans();
-      } catch(err) { alert(err.message); }
+      } catch (err) { alert(err.message); }
     }
 
     async function extendLoan(loanId) {
       try {
         const res = await fetch(`${API_BASE}/loans/${loanId}/extend`, { method: "PATCH" });
         const data = await res.json();
-        if(!res.ok) throw new Error(data.error);
+        if (!res.ok) throw new Error(data.error);
         alert(data.message);
         fetchUserLoans();
-      } catch(err) { alert(err.message); }
+      } catch (err) { alert(err.message); }
     }
 
     /* ---------- 관리자 (Admin) ---------- */
@@ -654,41 +979,216 @@
         const res = await fetch(`${API_BASE}/admin/penalties`);
         const data = await res.json();
         const mapped = data.data.map(u => ({
-          id: u.user_id, name: u.name, book: '다수 연체', // 유저별 집계이므로 생략
+          id: u.user_id, name: u.name, book: '다수 연체',
           days: '-', status: '제재중'
         }));
         renderOverdue(mapped);
-      } catch(err) { console.error('제재 대상자 목록 호출 실패', err); }
+      } catch (err) { console.error('제재 대상자 목록 호출 실패', err); }
     }
 
-    let historyCursor = null; // 오프셋(OFFSET)을 버리고 커서(Cursor)를 사용한다
+    let historyCursor = null;
     async function fetchHistory() {
       try {
-        const url = historyCursor 
-            ? `${API_BASE}/admin/loans?cursor=${historyCursor}` 
-            : `${API_BASE}/admin/loans`;
+        const url = historyCursor
+          ? `${API_BASE}/admin/loans?cursor=${historyCursor}`
+          : `${API_BASE}/admin/loans`;
         const res = await fetch(url);
         const data = await res.json();
-        
+
         const mapped = data.data.map(h => ({
-           id: h.loan_id, user: h.name, book: h.title,
-           type: h.status, 
-           date: new Date(h.loan_date).toISOString().slice(0, 16).replace('T', ' ')
+          id: h.loan_id, user: h.name, book: h.title,
+          type: h.status,
+          date: new Date(h.loan_date).toISOString().slice(0, 16).replace('T', ' ')
         }));
-        
-        // 첫 호출(cursor=null)이면 덮어쓰고, 이후엔 표에 이어붙인다.
+
         renderHistory(mapped, historyCursor !== null);
-        
+
         historyCursor = data.nextCursor;
-        if(!historyCursor) alert('더 이상 불러올 이력이 없는 마지막 구간이다.');
-      } catch(err) { console.error('이력 페이징 호출 실패', err); }
+        if (!historyCursor) alert('더 이상 불러올 이력이 없습니다.');
+      } catch (err) { console.error('이력 페이징 호출 실패', err); }
     }
 
-    // 초기 실행
+    async function fetchAdminStats() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/stats`);
+        const data = await res.json();
+        document.getElementById('stat-active-loans').innerText = data.activeLoans;
+        document.getElementById('stat-overdue').innerText = data.overdueLoans;
+        document.getElementById('stat-users').innerText = data.totalUsers;
+        document.getElementById('stat-copies').innerText = data.totalCopies;
+      } catch (err) { console.error('통계 호출 실패', err); }
+    }
+
+    /* ---------- 회원 정보 관리 & 커서 페이징 파이프라인 ---------- */
+    let userHistoryCursor = null;
+    let currentTargetUserId = null;
+
+    async function openUserDetails(id, name, email, phone, status) {
+      currentTargetUserId = id;
+      document.getElementById('edit-user-id').value = id;
+      document.getElementById('edit-user-name').value = name;
+      document.getElementById('edit-user-email').value = email !== '-' ? email : '';
+      document.getElementById('edit-user-phone').value = phone !== '-' ? phone : '';
+      
+      const badge = document.getElementById('edit-user-status-badge');
+      badge.innerText = status;
+      badge.className = `text-xs font-bold px-2 py-0.5 rounded-full ${status === '정상' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+
+      await loadUserCurrentLoans(id);
+      
+      userHistoryCursor = null;
+      document.getElementById('user-history-search-input').value = '';
+      await loadUserHistory(id, false);
+
+      const modal = document.getElementById('modal-user-details');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    async function loadUserCurrentLoans(userId) {
+      try {
+        const res = await fetch(`${API_BASE}/users/${userId}/current-loans`);
+        const data = await res.json();
+        const tbody = document.getElementById("user-active-loans-tbody");
+        tbody.innerHTML = data.map(l => `
+          <tr class="border-b">
+            <td class="p-2 font-mono">${l.copy_id}</td>
+            <td class="p-2 font-bold">${l.title}</td>
+            <td class="p-2 text-red-600 font-medium">${new Date(l.due_date).toISOString().slice(0,10)} ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체!)` : ''}</td>
+            <td class="p-2">
+              <button onclick="returnLoanFromModal(${l.loan_id})" class="text-green-600 font-bold text-xs hover:underline mr-2">반납</button>
+              <button onclick="extendLoanFromModal(${l.loan_id})" class="text-blue-600 font-bold text-xs hover:underline">연장</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch(err) { console.error(err); }
+    }
+
+    async function loadUserHistory(userId, append = false) {
+      const search = document.getElementById('user-history-search-input').value.trim();
+      let url = `${API_BASE}/users/${userId}/history?limit=5`;
+      if (userHistoryCursor) url += `&cursor=${userHistoryCursor}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        const tbody = document.getElementById('user-history-tbody');
+        
+        const html = json.data.map(h => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-mono">${h.loan_id}</td>
+            <td class="p-2">${h.copy_id}</td>
+            <td class="p-2 font-medium text-slate-900">${h.title}</td>
+            <td class="p-2 text-slate-500">${new Date(h.loan_date).toISOString().slice(0,10)}</td>
+            <td class="p-2 text-slate-500">${h.return_date ? new Date(h.return_date).toISOString().slice(0,10) : '-'}</td>
+            <td class="p-2"><span class="px-1.5 py-0.5 rounded text-xs font-bold ${h.status === 'ACTIVE' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-700'}">${h.status}</span></td>
+          </tr>
+        `).join('');
+
+        if (append) tbody.innerHTML += html;
+        else tbody.innerHTML = html;
+
+        userHistoryCursor = json.nextCursor;
+        const btn = document.getElementById('btn-user-history-more');
+        if (userHistoryCursor) btn.classList.remove('hidden');
+        else btn.classList.add('hidden');
+      } catch(err) { console.error(err); }
+    }
+
+    function searchUserHistory() { userHistoryCursor = null; loadUserHistory(currentTargetUserId, false); }
+    function loadMoreUserHistory() { loadUserHistory(currentTargetUserId, true); }
+
+    async function updateUserMeta() {
+      const id = document.getElementById('edit-user-id').value;
+      try {
+        const res = await fetch(`${API_BASE}/users/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('edit-user-name').value,
+            email: document.getElementById('edit-user-email').value,
+            phone: document.getElementById('edit-user-phone').value
+          })
+        });
+        if(!res.ok) throw new Error('회원 수정 실패');
+        alert('회원 정보가 수정되었습니다.');
+        fetchUsers();
+      } catch(err) { alert(err.message); }
+    }
+
+    async function triggerDeleteUserFromModal() {
+      if(currentTargetUserId) {
+        await deleteUser(currentTargetUserId);
+        closeModal('modal-user-details');
+      }
+    }
+
+    async function returnLoanFromModal(loanId) { await returnLoan(loanId); await loadUserCurrentLoans(currentTargetUserId); fetchAdminStats(); }
+    async function extendLoanFromModal(loanId) { await extendLoan(loanId); await loadUserCurrentLoans(currentTargetUserId); }
+
+
+    /* ---------- 도서 사본별 독립 커서 대출 이력 제어 ---------- */
+    let copyHistoryCursor = null;
+    let currentTargetCopyId = null;
+
+    async function openCopyHistoryModal(copyId) {
+      currentTargetCopyId = copyId;
+      document.getElementById('target-copy-id-span').innerText = copyId;
+      document.getElementById('copy-history-search-input').value = '';
+      copyHistoryCursor = null;
+      
+      await loadCopyHistory(copyId, false);
+      
+      const modal = document.getElementById('modal-copy-history');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    async function loadCopyHistory(copyId, append = false) {
+      const search = document.getElementById('copy-history-search-input').value.trim();
+      let url = `${API_BASE}/books/copies/${copyId}/history?limit=5`;
+      if (copyHistoryCursor) url += `&cursor=${copyHistoryCursor}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        const tbody = document.getElementById('copy-history-tbody');
+
+        const html = json.data.map(h => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2 font-mono">${h.loan_id}</td>
+            <td class="p-2 font-mono">${h.user_id}</td>
+            <td class="p-2 font-bold text-slate-900">${h.name}</td>
+            <td class="p-2 text-slate-500">${new Date(h.loan_date).toISOString().slice(0,16).replace('T',' ')}</td>
+            <td class="p-2 text-slate-500">${h.return_date ? new Date(h.return_date).toISOString().slice(0,16).replace('T',' ') : '-'}</td>
+            <td class="p-2"><span class="px-1.5 py-0.5 rounded text-xs font-bold ${h.status === 'ACTIVE' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-700'}">${h.status}</span></td>
+          </tr>
+        `).join('');
+
+        if (append) tbody.innerHTML += html;
+        else tbody.innerHTML = html;
+
+        copyHistoryCursor = json.nextCursor;
+        const btn = document.getElementById('btn-copy-history-more');
+        if (copyHistoryCursor) btn.classList.remove('hidden');
+        else btn.classList.add('hidden');
+      } catch(err) { console.error(err); }
+    }
+
+    function searchCopyHistory() { copyHistoryCursor = null; loadCopyHistory(currentTargetCopyId, false); }
+    function loadMoreCopyHistory() { loadCopyHistory(currentTargetCopyId, true); }
+
     document.addEventListener("DOMContentLoaded", () => {
       switchTab("books");
       fetchBooks();
       fetchUsers();
       fetchOverdue();
       fetchHistory();
+      fetchAdminStats();
     });
+  </script>
+</body>
+
+</html>
