@@ -102,4 +102,44 @@ router.patch('/users/:user_id/clear-penalty', async (req, res) => {
     }
 });
 
+router.get('/active', async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10;
+    const cursorDate = req.query.cursorDate;
+    const cursorId = req.query.cursorId ? parseInt(req.query.cursorId) : null;
+
+    try {
+        let query = `
+            SELECT l.loan_id, l.due_date, u.user_id, u.name, bc.copy_id, b.title, l.is_extended,
+                   CASE WHEN l.due_date > CURRENT_TIMESTAMP THEN CEIL(EXTRACT(EPOCH FROM (l.due_date - CURRENT_TIMESTAMP)) / 86400.0) ELSE 0 END AS remaining_days,
+                   CASE WHEN CURRENT_TIMESTAMP > l.due_date THEN CEIL(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - l.due_date)) / 86400.0) ELSE 0 END AS overdue_days
+            FROM loans l
+            JOIN users u ON l.user_id = u.user_id
+            JOIN book_copies bc ON l.copy_id = bc.copy_id
+            JOIN books b ON bc.isbn = b.isbn
+            WHERE l.status = 'ACTIVE'
+        `;
+        const values = [];
+        let paramIdx = 1;
+
+        if (cursorDate && cursorId) {
+            query += ` AND (l.due_date > $${paramIdx++} OR (l.due_date = $${paramIdx++} AND l.loan_id > $${paramIdx++}))`;
+            values.push(cursorDate, cursorDate, cursorId);
+        }
+
+        query += ` ORDER BY l.due_date ASC, l.loan_id ASC LIMIT $${paramIdx}`;
+        values.push(limit);
+
+        const result = await db.query(query, values);
+        const nextCursor = result.rows.length === limit ? result.rows[result.rows.length - 1] : null;
+
+        res.status(200).json({
+            data: result.rows,
+            nextCursorDate: nextCursor ? nextCursor.due_date : null,
+            nextCursorId: nextCursor ? nextCursor.loan_id : null
+        });
+    } catch (err) {
+        res.status(500).json({ error: '대출 목록 조회 실패' });
+    }
+});
+
 module.exports = router;

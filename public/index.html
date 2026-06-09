@@ -229,7 +229,7 @@
                     <th class="px-4 py-3 text-center">작업</th>
                   </tr>
                 </thead>
-                <tbody id="loans-tbody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="loans-global-tbody" class="divide-y divide-slate-200"></tbody>
               </table>
             </div>
           </div>
@@ -271,7 +271,7 @@
                     <th class="px-4 py-3 text-center">상태</th>
                   </tr>
                 </thead>
-                <tbody id="overdue-tbody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="admin-overdue-tbody" class="divide-y divide-slate-200"></tbody>
               </table>
             </div>
           </div>
@@ -290,7 +290,7 @@
                     <th class="px-4 py-3">일시</th>
                   </tr>
                 </thead>
-                <tbody id="history-tbody" class="divide-y divide-slate-100"></tbody>
+                <tbody id="admin-history-tbody" class="divide-y divide-slate-200"></tbody>
               </table>
             </div>
             <div class="mt-4 flex justify-center">
@@ -602,12 +602,12 @@
      * ========================================================================= */
     function openModal(id) { document.getElementById(id).hidden = false; }
     function closeModal(id) {
-    const m = document.getElementById(id);
-    if (m) {
+      const m = document.getElementById(id);
+      if (m) {
         m.classList.add('hidden');
         m.classList.remove('flex');
+      }
     }
-}
     // 배경 클릭 시 닫기
     document.querySelectorAll("[id^='modal-']").forEach((m) => {
       m.addEventListener("click", (e) => { if (e.target === m) m.hidden = true; });
@@ -723,6 +723,39 @@
       else tbody.innerHTML = html;
     }
 
+    function renderOverdue(list) {
+      const tbody = document.getElementById("admin-overdue-tbody");
+      if (!tbody) return;
+      tbody.innerHTML = list.map(u => `
+        <tr class="border-b">
+          <td class="p-3 text-sm text-slate-800">${u.id}</td>
+          <td class="p-3 text-sm font-bold text-slate-900">${u.name}</td>
+          <td class="p-3 text-sm"><span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">제재중</span></td>
+          <td class="p-3 text-sm">
+            <button onclick="clearPenalty(${u.id})" class="text-blue-600 font-bold hover:underline">제재 강제 해제</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderHistory(list, append) {
+      const tbody = document.getElementById("admin-history-tbody");
+      if (!tbody) return;
+      const html = list.map(h => `
+        <tr class="border-b hover:bg-slate-50">
+          <td class="p-3 text-sm font-mono">${h.id}</td>
+          <td class="p-3 text-sm font-bold text-slate-800">${h.user}</td>
+          <td class="p-3 text-sm text-slate-700">${h.book}</td>
+          <td class="p-3 text-sm text-slate-500">${h.date}</td>
+          <td class="p-3 text-sm">
+            <span class="px-2 py-1 rounded text-xs font-bold ${h.type === 'ACTIVE' ? 'bg-orange-100 text-orange-800' : 'bg-slate-100 text-slate-800'}">${h.type}</span>
+          </td>
+        </tr>
+      `).join('');
+      if (append) tbody.innerHTML += html;
+      else tbody.innerHTML = html;
+    }
+
     /* =========================================================================
      *  ★ 백엔드 연동용 fetch 함수 뼈대 ★
      *  현재는 Mock 데이터를 렌더링합니다.
@@ -789,12 +822,15 @@
             <td class="p-2"><span class="px-2 py-1 text-xs font-bold rounded-full ${c.copy_status === 'AVAILABLE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${c.copy_status}</span></td>
             <td class="p-2 text-xs font-medium ${c.loan_status === 'ACTIVE' ? 'text-orange-600' : 'text-slate-500'}">${c.loan_status === 'ACTIVE' ? `대출중 (${c.remaining_days}일 남음)` : '창고 보관중'}</td>
             <td class="p-2 flex space-x-1">
-              <button onclick="toggleCopyStatus(${c.copy_id}, '${c.copy_status}')" class="bg-slate-200 text-slate-700 px-2 py-1 text-xs font-bold rounded hover:bg-slate-300">상태반전</button>
+              ${c.loan_status === 'ACTIVE'
+                ? `<button disabled class="bg-slate-100 text-slate-400 px-2 py-1 text-xs font-bold rounded cursor-not-allowed border border-slate-200">상태고정</button>`
+                : `<button onclick="toggleCopyStatus(${c.copy_id}, '${c.copy_status}')" class="bg-slate-200 text-slate-700 px-2 py-1 text-xs font-bold rounded hover:bg-slate-300">상태 변경</button>`
+              }
               <button onclick="openCopyHistoryModal(${c.copy_id})" class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 text-xs font-bold rounded hover:bg-blue-100">이력 조회</button>
             </td>
           </tr>
         `).join('');
-      } catch (err) { console.error('사본 로드에 실패했습니다.', err); }
+      } catch (err) { console.error('사본 로드 실패', err); }
     }
 
     async function updateBookMeta() {
@@ -941,31 +977,78 @@
       } catch (err) { alert(err.message); }
     }
 
-    async function fetchUserLoans() {
-      const userId = document.getElementById("loan-lookup-user-id").value.trim();
-      if (!userId) return renderLoans([]);
+    let globalLoansCursorDate = null;
+    let globalLoansCursorId = null;
 
-      try {
+    async function fetchUserLoans(append = false) {
+      const userId = document.getElementById("loan-lookup-user-id")?.value.trim();
+      const tbody = document.getElementById("loans-global-tbody");
+      if (!tbody) return;
+
+      if (!userId) {
+        if (!append) { globalLoansCursorDate = null; globalLoansCursorId = null; }
+        try {
+            let url = `${API_BASE}/loans/active?limit=10`;
+            if (globalLoansCursorDate) url += `&cursorDate=${encodeURIComponent(globalLoansCursorDate)}&cursorId=${globalLoansCursorId}`;
+            const res = await fetch(url);
+            const json = await res.json();
+            
+            const html = json.data.map(l => `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-3 text-sm font-mono">${l.loan_id}</td>
+                    <td class="p-3 text-sm font-bold text-slate-800">${l.name} <span class="text-xs text-slate-500">(ID:${l.user_id})</span></td>
+                    <td class="p-3 text-sm">${l.title} <span class="text-xs text-slate-500">(Copy:${l.copy_id})</span></td>
+                    <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">
+                        ${new Date(l.due_date).toISOString().slice(0,10)} 
+                        ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체)` : `(${l.remaining_days}일 남음)`}
+                        <span class="text-xs ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
+                    </td>
+                    <td class="p-3 text-sm">
+                        <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">빠른 반납</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            if (append) tbody.innerHTML += html;
+            else tbody.innerHTML = html;
+
+            globalLoansCursorDate = json.nextCursorDate;
+            globalLoansCursorId = json.nextCursorId;
+        } catch(err) { console.error(err); }
+        return;
+      }
+
+    try {
         const res = await fetch(`${API_BASE}/users/${userId}/current-loans`);
         const data = await res.json();
-        const mapped = data.map(l => ({
-          id: l.loan_id, title: l.title, copyId: l.copy_id,
-          loanDate: new Date(l.loan_date).toISOString().slice(0, 10),
-          dueDate: new Date(l.due_date).toISOString().slice(0, 10),
-          status: l.overdue_days > 0 ? '연체' : '대출중'
-        }));
-        renderLoans(mapped);
-      } catch (err) { alert('대출 현황 조회 실패.'); }
+        tbody.innerHTML = data.map(l => `
+          <tr class="border-b">
+            <td class="p-3 text-sm font-mono">${l.loan_id}</td>
+            <td class="p-3 text-sm font-bold text-brand-600">검색된 유저 (ID:${userId})</td>
+            <td class="p-3 text-sm">${l.title} <span class="text-xs text-slate-500">(Copy:${l.copy_id})</span></td>
+            <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">${new Date(l.due_date).toISOString().slice(0,10)}</td>
+            <td class="p-3 text-sm"><button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">빠른 반납</button></td>
+          </tr>
+        `).join('');
+      } catch(err) { console.error('검색 실패'); }
+    }
+
+    function triggerGlobalRefresh() {
+        fetchAdminStats();
+        fetchOverdue();
+        fetchHistory(true);
+        fetchBooks();
+        fetchUsers();
     }
 
     async function returnLoan(loanId) {
       try {
         const res = await fetch(`${API_BASE}/loans/${loanId}/return`, { method: "PATCH" });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        alert(data.message);
+        if(!res.ok) throw new Error('반납 실패');
+        alert('성공적으로 반납되었습니다.');
         fetchUserLoans();
-      } catch (err) { alert(err.message); }
+        triggerGlobalRefresh();
+      } catch(err) { alert(err.message); }
     }
 
     async function extendLoan(loanId) {
@@ -1024,6 +1107,16 @@
       } catch (err) { console.error('통계 호출 실패', err); }
     }
 
+    async function clearPenalty(userId) {
+      if(!confirm(`회원 ID [${userId}]의 제재를 해제하시겠습니까?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/loans/users/${userId}/clear-penalty`, { method: 'PATCH' });
+        if(!res.ok) throw new Error('해제 실패');
+        alert('제재 해제가 완료되었습니다.');
+        triggerGlobalRefresh();
+      } catch(err) { alert(err.message); }
+    }
+
     /* ---------- 회원 정보 관리 & 커서 페이징 파이프라인 ---------- */
     let userHistoryCursor = null;
     let currentTargetUserId = null;
@@ -1034,13 +1127,13 @@
       document.getElementById('edit-user-name').value = name;
       document.getElementById('edit-user-email').value = email !== '-' ? email : '';
       document.getElementById('edit-user-phone').value = phone !== '-' ? phone : '';
-      
+
       const badge = document.getElementById('edit-user-status-badge');
       badge.innerText = status;
       badge.className = `text-xs font-bold px-2 py-0.5 rounded-full ${status === '정상' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
 
       await loadUserCurrentLoans(id);
-      
+
       userHistoryCursor = null;
       document.getElementById('user-history-search-input').value = '';
       await loadUserHistory(id, false);
@@ -1059,10 +1152,16 @@
           <tr class="border-b">
             <td class="p-2 font-mono">${l.copy_id}</td>
             <td class="p-2 font-bold">${l.title}</td>
-            <td class="p-2 text-red-600 font-medium">${new Date(l.due_date).toISOString().slice(0,10)} ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체!)` : ''}</td>
+            <td class="p-2 text-slate-800 font-medium">
+              ${new Date(l.due_date).toISOString().slice(0,10)} 
+              ${l.overdue_days > 0 ? `<span class="text-red-600">(${l.overdue_days}일 연체!)</span>` : ''} 
+              <span class="text-xs font-bold ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
+            </td>
             <td class="p-2">
               <button onclick="returnLoanFromModal(${l.loan_id})" class="text-green-600 font-bold text-xs hover:underline mr-2">반납</button>
-              <button onclick="extendLoanFromModal(${l.loan_id})" class="text-blue-600 font-bold text-xs hover:underline">연장</button>
+              ${l.is_extended 
+                ? `<span class="text-slate-400 text-xs font-bold cursor-not-allowed">연장불가</span>` 
+                : `<button onclick="extendLoanFromModal(${l.loan_id})" class="text-blue-600 font-bold text-xs hover:underline">연장</button>`}
             </td>
           </tr>
         `).join('');
@@ -1079,14 +1178,14 @@
         const res = await fetch(url);
         const json = await res.json();
         const tbody = document.getElementById('user-history-tbody');
-        
+
         const html = json.data.map(h => `
           <tr class="border-b hover:bg-slate-50">
             <td class="p-2 font-mono">${h.loan_id}</td>
             <td class="p-2">${h.copy_id}</td>
             <td class="p-2 font-medium text-slate-900">${h.title}</td>
-            <td class="p-2 text-slate-500">${new Date(h.loan_date).toISOString().slice(0,10)}</td>
-            <td class="p-2 text-slate-500">${h.return_date ? new Date(h.return_date).toISOString().slice(0,10) : '-'}</td>
+            <td class="p-2 text-slate-500">${new Date(h.loan_date).toISOString().slice(0, 10)}</td>
+            <td class="p-2 text-slate-500">${h.return_date ? new Date(h.return_date).toISOString().slice(0, 10) : '-'}</td>
             <td class="p-2"><span class="px-1.5 py-0.5 rounded text-xs font-bold ${h.status === 'ACTIVE' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-700'}">${h.status}</span></td>
           </tr>
         `).join('');
@@ -1098,7 +1197,7 @@
         const btn = document.getElementById('btn-user-history-more');
         if (userHistoryCursor) btn.classList.remove('hidden');
         else btn.classList.add('hidden');
-      } catch(err) { console.error(err); }
+      } catch (err) { console.error(err); }
     }
 
     function searchUserHistory() { userHistoryCursor = null; loadUserHistory(currentTargetUserId, false); }
@@ -1116,22 +1215,31 @@
             phone: document.getElementById('edit-user-phone').value
           })
         });
-        if(!res.ok) throw new Error('회원 수정 실패');
+        if (!res.ok) throw new Error('회원 수정 실패');
         alert('회원 정보가 수정되었습니다.');
         fetchUsers();
-      } catch(err) { alert(err.message); }
+      } catch (err) { alert(err.message); }
     }
 
     async function triggerDeleteUserFromModal() {
-      if(currentTargetUserId) {
+      if (currentTargetUserId) {
         await deleteUser(currentTargetUserId);
         closeModal('modal-user-details');
       }
     }
 
-    async function returnLoanFromModal(loanId) { await returnLoan(loanId); await loadUserCurrentLoans(currentTargetUserId); fetchAdminStats(); }
-    async function extendLoanFromModal(loanId) { await extendLoan(loanId); await loadUserCurrentLoans(currentTargetUserId); }
+    async function returnLoanFromModal(loanId) { 
+      await returnLoan(loanId); 
+      await loadUserCurrentLoans(currentTargetUserId); 
+      await loadUserHistory(currentTargetUserId, false);
+      triggerGlobalRefresh(); 
+    }
 
+    async function extendLoanFromModal(loanId) { 
+      await extendLoan(loanId); 
+      await loadUserCurrentLoans(currentTargetUserId); 
+      triggerGlobalRefresh(); 
+    }
 
     /* ---------- 도서 사본별 독립 커서 대출 이력 제어 ---------- */
     let copyHistoryCursor = null;
@@ -1142,9 +1250,9 @@
       document.getElementById('target-copy-id-span').innerText = copyId;
       document.getElementById('copy-history-search-input').value = '';
       copyHistoryCursor = null;
-      
+
       await loadCopyHistory(copyId, false);
-      
+
       const modal = document.getElementById('modal-copy-history');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -1166,8 +1274,8 @@
             <td class="p-2 font-mono">${h.loan_id}</td>
             <td class="p-2 font-mono">${h.user_id}</td>
             <td class="p-2 font-bold text-slate-900">${h.name}</td>
-            <td class="p-2 text-slate-500">${new Date(h.loan_date).toISOString().slice(0,16).replace('T',' ')}</td>
-            <td class="p-2 text-slate-500">${h.return_date ? new Date(h.return_date).toISOString().slice(0,16).replace('T',' ') : '-'}</td>
+            <td class="p-2 text-slate-500">${new Date(h.loan_date).toISOString().slice(0, 16).replace('T', ' ')}</td>
+            <td class="p-2 text-slate-500">${h.return_date ? new Date(h.return_date).toISOString().slice(0, 16).replace('T', ' ') : '-'}</td>
             <td class="p-2"><span class="px-1.5 py-0.5 rounded text-xs font-bold ${h.status === 'ACTIVE' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-700'}">${h.status}</span></td>
           </tr>
         `).join('');
@@ -1179,7 +1287,7 @@
         const btn = document.getElementById('btn-copy-history-more');
         if (copyHistoryCursor) btn.classList.remove('hidden');
         else btn.classList.add('hidden');
-      } catch(err) { console.error(err); }
+      } catch (err) { console.error(err); }
     }
 
     function searchCopyHistory() { copyHistoryCursor = null; loadCopyHistory(currentTargetCopyId, false); }
