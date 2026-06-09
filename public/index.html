@@ -823,7 +823,7 @@
             <td class="p-2 text-xs font-medium ${c.loan_status === 'ACTIVE' ? 'text-orange-600' : 'text-slate-500'}">${c.loan_status === 'ACTIVE' ? `대출중 (${c.remaining_days}일 남음)` : '창고 보관중'}</td>
             <td class="p-2 flex space-x-1">
               ${c.loan_status === 'ACTIVE'
-                ? `<button disabled class="bg-slate-100 text-slate-400 px-2 py-1 text-xs font-bold rounded cursor-not-allowed border border-slate-200">상태고정</button>`
+                ? `<button disabled class="bg-slate-100 text-slate-400 px-2 py-1 text-xs font-bold rounded cursor-not-allowed border border-slate-200">변경 불가</button>`
                 : `<button onclick="toggleCopyStatus(${c.copy_id}, '${c.copy_status}')" class="bg-slate-200 text-slate-700 px-2 py-1 text-xs font-bold rounded hover:bg-slate-300">상태 변경</button>`
               }
               <button onclick="openCopyHistoryModal(${c.copy_id})" class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 text-xs font-bold rounded hover:bg-blue-100">이력 조회</button>
@@ -984,7 +984,6 @@
       const userId = document.getElementById("loan-lookup-user-id")?.value.trim();
       const tbody = document.getElementById("loans-global-tbody");
       if (!tbody) return;
-
       if (!userId) {
         if (!append) { globalLoansCursorDate = null; globalLoansCursorId = null; }
         try {
@@ -1018,7 +1017,7 @@
         return;
       }
 
-    try {
+      try {
         const res = await fetch(`${API_BASE}/users/${userId}/current-loans`);
         const data = await res.json();
         tbody.innerHTML = data.map(l => `
@@ -1075,7 +1074,7 @@
     }
 
     let historyCursor = null;
-    async function fetchHistory() {
+    async function fetchHistory(reset = false) {
       if (reset) historyCursor = null;
       try {
         const url = historyCursor
@@ -1154,7 +1153,7 @@
             <td class="p-2 font-bold">${l.title}</td>
             <td class="p-2 text-slate-800 font-medium">
               ${new Date(l.due_date).toISOString().slice(0,10)} 
-              ${l.overdue_days > 0 ? `<span class="text-red-600">(${l.overdue_days}일 연체!)</span>` : ''} 
+              ${l.overdue_days > 0 ? `<span class="text-red-600">(${l.overdue_days}일 연체)</span>` : ''} 
               <span class="text-xs font-bold ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
             </td>
             <td class="p-2">
