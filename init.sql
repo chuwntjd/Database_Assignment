@@ -8,7 +8,7 @@ CREATE TABLE users (
     penalty_end_date TIMESTAMPTZ NULL,
     deleted_at TIMESTAMPTZ NULL,
     email VARCHAR(100) UNIQUE NULL,
-    COLUMN phone VARCHAR(20) UNIQUE NULL
+    phone VARCHAR(20) UNIQUE NULL
 );
 CREATE INDEX idx_users_active ON users(deleted_at) WHERE deleted_at IS NULL;
 
