@@ -109,7 +109,7 @@ router.get('/active', async (req, res) => {
 
     try {
         let query = `
-            SELECT l.loan_id, l.due_date, u.user_id, u.name, bc.copy_id, b.title, l.is_extended,
+            SELECT l.loan_id, l.loan_date, l.due_date, u.user_id, u.name, bc.copy_id, b.title, l.is_extended,
                    CASE WHEN l.due_date > CURRENT_TIMESTAMP THEN CEIL(EXTRACT(EPOCH FROM (l.due_date - CURRENT_TIMESTAMP)) / 86400.0) ELSE 0 END AS remaining_days,
                    CASE WHEN CURRENT_TIMESTAMP > l.due_date THEN CEIL(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - l.due_date)) / 86400.0) ELSE 0 END AS overdue_days
             FROM loans l

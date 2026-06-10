@@ -78,7 +78,12 @@ router.get('/stats', async (req, res) => {
         const activeLoans = await db.query("SELECT COUNT(*) FROM loans WHERE status = 'ACTIVE'");
         const overdueLoans = await db.query("SELECT COUNT(*) FROM loans WHERE status = 'ACTIVE' AND due_date < CURRENT_TIMESTAMP");
         const totalUsers = await db.query("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL");
-        const totalCopies = await db.query("SELECT COUNT(*) FROM book_copies WHERE status = 'AVAILABLE'");
+        
+        const totalCopies = await db.query(`
+            SELECT COUNT(*) FROM book_copies bc 
+            WHERE bc.status = 'AVAILABLE' 
+            AND NOT EXISTS (SELECT 1 FROM loans l WHERE l.copy_id = bc.copy_id AND l.status = 'ACTIVE')
+        `);
 
         res.status(200).json({
             activeLoans: parseInt(activeLoans.rows[0].count),

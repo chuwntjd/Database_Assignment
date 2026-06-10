@@ -219,14 +219,13 @@
             <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
               <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <tr>
-                    <th class="px-4 py-3">대출 ID</th>
-                    <th class="px-4 py-3">도서 제목</th>
-                    <th class="px-4 py-3">사본 ID</th>
-                    <th class="px-4 py-3">대출일</th>
-                    <th class="px-4 py-3">반납 예정일</th>
-                    <th class="px-4 py-3 text-center">상태</th>
-                    <th class="px-4 py-3 text-center">작업</th>
+                  <tr class="border-b border-slate-200 bg-slate-50 text-left">
+                    <th class="p-3 text-xs font-medium text-slate-500">대출 ID</th>
+                    <th class="p-3 text-xs font-medium text-slate-500">도서 제목</th>
+                    <th class="p-3 text-xs font-medium text-slate-500">사본 ID</th>
+                    <th class="p-3 text-xs font-medium text-slate-500">대출일</th>
+                    <th class="p-3 text-xs font-medium text-slate-500">반납예정일</th>
+                    <th class="p-3 text-xs font-medium text-slate-500">작업</th>
                   </tr>
                 </thead>
                 <tbody id="loans-global-tbody" class="divide-y divide-slate-200"></tbody>
@@ -600,7 +599,13 @@
     /* =========================================================================
      *  모달 제어
      * ========================================================================= */
-    function openModal(id) { document.getElementById(id).hidden = false; }
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
     function closeModal(id) {
       const m = document.getElementById(id);
       if (m) {
@@ -823,9 +828,9 @@
             <td class="p-2 text-xs font-medium ${c.loan_status === 'ACTIVE' ? 'text-orange-600' : 'text-slate-500'}">${c.loan_status === 'ACTIVE' ? `대출중 (${c.remaining_days}일 남음)` : '창고 보관중'}</td>
             <td class="p-2 flex space-x-1">
               ${c.loan_status === 'ACTIVE'
-                ? `<button disabled class="bg-slate-100 text-slate-400 px-2 py-1 text-xs font-bold rounded cursor-not-allowed border border-slate-200">변경 불가</button>`
-                : `<button onclick="toggleCopyStatus(${c.copy_id}, '${c.copy_status}')" class="bg-slate-200 text-slate-700 px-2 py-1 text-xs font-bold rounded hover:bg-slate-300">상태 변경</button>`
-              }
+            ? `<button disabled class="bg-slate-100 text-slate-400 px-2 py-1 text-xs font-bold rounded cursor-not-allowed border border-slate-200">변경 불가</button>`
+            : `<button onclick="toggleCopyStatus(${c.copy_id}, '${c.copy_status}')" class="bg-slate-200 text-slate-700 px-2 py-1 text-xs font-bold rounded hover:bg-slate-300">상태 변경</button>`
+          }
               <button onclick="openCopyHistoryModal(${c.copy_id})" class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-1 text-xs font-bold rounded hover:bg-blue-100">이력 조회</button>
             </td>
           </tr>
@@ -984,6 +989,7 @@
       const userId = document.getElementById("loan-lookup-user-id")?.value.trim();
       const tbody = document.getElementById("loans-global-tbody");
       if (!tbody) return;
+
       if (!userId) {
         if (!append) { globalLoansCursorDate = null; globalLoansCursorId = null; }
         try {
@@ -995,15 +1001,19 @@
             const html = json.data.map(l => `
                 <tr class="border-b hover:bg-slate-50">
                     <td class="p-3 text-sm font-mono">${l.loan_id}</td>
-                    <td class="p-3 text-sm font-bold text-slate-800">${l.name} <span class="text-xs text-slate-500">(ID:${l.user_id})</span></td>
-                    <td class="p-3 text-sm">${l.title} <span class="text-xs text-slate-500">(Copy:${l.copy_id})</span></td>
+                    <td class="p-3 text-sm font-bold text-slate-800">${l.title} <span class="text-xs font-normal text-slate-500">(유저 ID:${l.user_id})</span></td>
+                    <td class="p-3 text-sm text-slate-600">${l.copy_id}</td>
+                    <td class="p-3 text-sm text-slate-500">${new Date(l.loan_date).toISOString().slice(0,10)}</td>
                     <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">
                         ${new Date(l.due_date).toISOString().slice(0,10)} 
                         ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체)` : `(${l.remaining_days}일 남음)`}
                         <span class="text-xs ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
                     </td>
-                    <td class="p-3 text-sm">
-                        <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">빠른 반납</button>
+                    <td class="p-3 text-sm flex space-x-3 items-center">
+                        <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">반납</button>
+                        ${l.is_extended 
+                          ? `<span class="text-slate-400 font-bold cursor-not-allowed text-xs">연장불가</span>` 
+                          : `<button onclick="extendLoan(${l.loan_id})" class="text-blue-600 font-bold hover:underline">연장</button>`}
                     </td>
                 </tr>
             `).join('');
@@ -1021,43 +1031,53 @@
         const res = await fetch(`${API_BASE}/users/${userId}/current-loans`);
         const data = await res.json();
         tbody.innerHTML = data.map(l => `
-          <tr class="border-b">
+          <tr class="border-b hover:bg-slate-50">
             <td class="p-3 text-sm font-mono">${l.loan_id}</td>
-            <td class="p-3 text-sm font-bold text-brand-600">검색된 유저 (ID:${userId})</td>
-            <td class="p-3 text-sm">${l.title} <span class="text-xs text-slate-500">(Copy:${l.copy_id})</span></td>
-            <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">${new Date(l.due_date).toISOString().slice(0,10)}</td>
-            <td class="p-3 text-sm"><button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">빠른 반납</button></td>
+            <td class="p-3 text-sm font-bold text-brand-600">${l.title}</td>
+            <td class="p-3 text-sm text-slate-600">${l.copy_id}</td>
+            <td class="p-3 text-sm text-slate-500">${new Date(l.loan_date).toISOString().slice(0,10)}</td>
+            <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">
+                ${new Date(l.due_date).toISOString().slice(0,10)} 
+                ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체)` : `(${l.remaining_days}일 남음)`}
+                <span class="text-xs ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
+            </td>
+            <td class="p-3 text-sm flex space-x-3 items-center">
+                <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">반납</button>
+                ${l.is_extended 
+                  ? `<span class="text-slate-400 font-bold cursor-not-allowed text-xs">연장불가</span>` 
+                  : `<button onclick="extendLoan(${l.loan_id})" class="text-blue-600 font-bold hover:underline">연장</button>`}
+            </td>
           </tr>
         `).join('');
       } catch(err) { console.error('검색 실패'); }
     }
 
     function triggerGlobalRefresh() {
-        fetchAdminStats();
-        fetchOverdue();
-        fetchHistory(true);
-        fetchBooks();
-        fetchUsers();
+      fetchAdminStats();
+      fetchOverdue();
+      fetchHistory(true);
+      fetchBooks();
+      fetchUsers();
     }
 
     async function returnLoan(loanId) {
       try {
         const res = await fetch(`${API_BASE}/loans/${loanId}/return`, { method: "PATCH" });
-        if(!res.ok) throw new Error('반납 실패');
+        if (!res.ok) throw new Error('반납 실패');
         alert('성공적으로 반납되었습니다.');
         fetchUserLoans();
         triggerGlobalRefresh();
-      } catch(err) { alert(err.message); }
+      } catch (err) { alert(err.message); }
     }
 
     async function extendLoan(loanId) {
       try {
         const res = await fetch(`${API_BASE}/loans/${loanId}/extend`, { method: "PATCH" });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        alert(data.message);
+        if(!res.ok) throw new Error('연장 실패');
+        alert('대출 기한이 1주일 연장되었다.');
         fetchUserLoans();
-      } catch (err) { alert(err.message); }
+        triggerGlobalRefresh(); 
+      } catch(err) { alert(err.message); }
     }
 
     /* ---------- 관리자 (Admin) ---------- */
@@ -1107,13 +1127,13 @@
     }
 
     async function clearPenalty(userId) {
-      if(!confirm(`회원 ID [${userId}]의 제재를 해제하시겠습니까?`)) return;
+      if (!confirm(`회원 ID [${userId}]의 제재를 해제하시겠습니까?`)) return;
       try {
         const res = await fetch(`${API_BASE}/loans/users/${userId}/clear-penalty`, { method: 'PATCH' });
-        if(!res.ok) throw new Error('해제 실패');
+        if (!res.ok) throw new Error('해제 실패');
         alert('제재 해제가 완료되었습니다.');
         triggerGlobalRefresh();
-      } catch(err) { alert(err.message); }
+      } catch (err) { alert(err.message); }
     }
 
     /* ---------- 회원 정보 관리 & 커서 페이징 파이프라인 ---------- */
@@ -1152,19 +1172,19 @@
             <td class="p-2 font-mono">${l.copy_id}</td>
             <td class="p-2 font-bold">${l.title}</td>
             <td class="p-2 text-slate-800 font-medium">
-              ${new Date(l.due_date).toISOString().slice(0,10)} 
+              ${new Date(l.due_date).toISOString().slice(0, 10)} 
               ${l.overdue_days > 0 ? `<span class="text-red-600">(${l.overdue_days}일 연체)</span>` : ''} 
               <span class="text-xs font-bold ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
             </td>
             <td class="p-2">
               <button onclick="returnLoanFromModal(${l.loan_id})" class="text-green-600 font-bold text-xs hover:underline mr-2">반납</button>
-              ${l.is_extended 
-                ? `<span class="text-slate-400 text-xs font-bold cursor-not-allowed">연장불가</span>` 
-                : `<button onclick="extendLoanFromModal(${l.loan_id})" class="text-blue-600 font-bold text-xs hover:underline">연장</button>`}
+              ${l.is_extended
+            ? `<span class="text-slate-400 text-xs font-bold cursor-not-allowed">연장불가</span>`
+            : `<button onclick="extendLoanFromModal(${l.loan_id})" class="text-blue-600 font-bold text-xs hover:underline">연장</button>`}
             </td>
           </tr>
         `).join('');
-      } catch(err) { console.error(err); }
+      } catch (err) { console.error(err); }
     }
 
     async function loadUserHistory(userId, append = false) {
@@ -1227,17 +1247,17 @@
       }
     }
 
-    async function returnLoanFromModal(loanId) { 
-      await returnLoan(loanId); 
-      await loadUserCurrentLoans(currentTargetUserId); 
+    async function returnLoanFromModal(loanId) {
+      await returnLoan(loanId);
+      await loadUserCurrentLoans(currentTargetUserId);
       await loadUserHistory(currentTargetUserId, false);
-      triggerGlobalRefresh(); 
+      triggerGlobalRefresh();
     }
 
-    async function extendLoanFromModal(loanId) { 
-      await extendLoan(loanId); 
-      await loadUserCurrentLoans(currentTargetUserId); 
-      triggerGlobalRefresh(); 
+    async function extendLoanFromModal(loanId) {
+      await extendLoan(loanId);
+      await loadUserCurrentLoans(currentTargetUserId);
+      triggerGlobalRefresh();
     }
 
     /* ---------- 도서 사본별 독립 커서 대출 이력 제어 ---------- */
@@ -1299,6 +1319,7 @@
       fetchOverdue();
       fetchHistory();
       fetchAdminStats();
+      fetchUserLoans();
     });
   </script>
 </body>
