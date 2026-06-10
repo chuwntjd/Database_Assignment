@@ -759,10 +759,10 @@
           <td class="p-3 text-sm font-mono">${h.id}</td>
           <td class="p-3 text-sm font-bold text-slate-800">${h.user}</td>
           <td class="p-3 text-sm text-slate-700">${h.book}</td>
-          <td class="p-3 text-sm text-slate-500">${h.date}</td>
           <td class="p-3 text-sm">
             <span class="px-2 py-1 rounded text-xs font-bold ${h.type === 'ACTIVE' ? 'bg-orange-100 text-orange-800' : 'bg-slate-100 text-slate-800'}">${h.type}</span>
           </td>
+          <td class="p-3 text-sm text-slate-500">${h.date}</td>
         </tr>
       `).join('');
       if (append) tbody.innerHTML += html;
