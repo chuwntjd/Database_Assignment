@@ -29,7 +29,7 @@ router.put('/:id', async (req, res) => {
              RETURNING user_id, name, email, phone`,
             [name, email || null, phone || null, id]
         );
-        
+
         if (result.rowCount === 0) return res.status(404).json({ error: '존재하지 않거나 삭제된 회원입니다.' });
         res.status(200).json(result.rows[0]);
     } catch (err) {
@@ -43,6 +43,11 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
+        const check = await db.query("SELECT COUNT(*) FROM loans WHERE user_id = $1 AND status = 'ACTIVE'", [id]);
+        if (parseInt(check.rows[0].count) > 0) {
+            return res.status(400).json({ error: '대출 중인 도서가 존재하여 삭제할 수 없습니다.' });
+        }
+
         const result = await db.query(
             'UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = $1 AND deleted_at IS NULL RETURNING user_id',
             [id]
@@ -52,7 +57,7 @@ router.delete('/:id', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: '회원 삭제 실패' });
     }
-});
+})
 
 router.get('/search', async (req, res) => {
     const { name } = req.query;
@@ -60,7 +65,7 @@ router.get('/search', async (req, res) => {
         const result = await db.query(
             `SELECT user_id, name, email, phone, created_at, penalty_end_date 
              FROM users 
-             WHERE name ILIKE $1 AND deleted_at IS NULL`,
+             WHERE (name ILIKE $1 OR user_id::TEXT ILIKE $1) AND deleted_at IS NULL`,
             [`%${name}%`]
         );
         res.status(200).json(result.rows);
@@ -113,26 +118,14 @@ router.get('/:id/current-loans', async (req, res) => {
     try {
         const result = await db.query(
             `SELECT 
-                l.loan_id,
-                bc.isbn,
-                b.title,
-                l.copy_id,
-                l.loan_date,
-                l.due_date,
-                l.is_extended,
-                CASE
-                    WHEN l.due_date > CURRENT_TIMESTAMP 
-                        THEN CEIL(EXTRACT(EPOCH FROM (l.due_date - CURRENT_TIMESTAMP)) / 86400.0)
-                    ELSE 0
-                END AS remaining_days,
-                CASE
-                    WHEN CURRENT_TIMESTAMP > l.due_date 
-                        THEN CEIL(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - l.due_date)) / 86400.0)
-                    ELSE 0
-                END AS overdue_days
+                l.loan_id, bc.isbn, b.title, l.copy_id, l.loan_date, l.due_date, l.is_extended,
+                u.user_id, u.name,
+                CASE WHEN l.due_date > CURRENT_TIMESTAMP THEN CEIL(EXTRACT(EPOCH FROM (l.due_date - CURRENT_TIMESTAMP)) / 86400.0) ELSE 0 END AS remaining_days,
+                CASE WHEN CURRENT_TIMESTAMP > l.due_date THEN CEIL(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - l.due_date)) / 86400.0) ELSE 0 END AS overdue_days
              FROM loans l
              JOIN book_copies bc ON l.copy_id = bc.copy_id
              JOIN books b ON bc.isbn = b.isbn
+             JOIN users u ON l.user_id = u.user_id -- 이 조인(JOIN)이 없어서 undefined가 뜬 거다
              WHERE l.user_id = $1 AND l.status = 'ACTIVE'
              ORDER BY l.due_date ASC`,
             [id]

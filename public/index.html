@@ -155,7 +155,7 @@
         <section id="tab-users" class="tab-panel hidden space-y-6">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex flex-1 flex-col gap-2 sm:flex-row">
-              <input id="user-search-name" type="text" placeholder="회원 이름 검색..."
+              <input id="user-search-name" type="text" placeholder="회원 이름 혹은 ID 검색..."
                 class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
               <button onclick="fetchUsers()"
                 class="shrink-0 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">검색</button>
@@ -221,8 +221,8 @@
                 <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                   <tr class="border-b border-slate-200 bg-slate-50 text-left">
                     <th class="p-3 text-xs font-medium text-slate-500">대출 ID</th>
+                    <th class="p-3 text-xs font-medium text-slate-500">회원 이름</th>
                     <th class="p-3 text-xs font-medium text-slate-500">도서 제목</th>
-                    <th class="p-3 text-xs font-medium text-slate-500">사본 ID</th>
                     <th class="p-3 text-xs font-medium text-slate-500">대출일</th>
                     <th class="p-3 text-xs font-medium text-slate-500">반납예정일</th>
                     <th class="p-3 text-xs font-medium text-slate-500">작업</th>
@@ -332,6 +332,12 @@
             <label class="mb-1 block text-xs font-medium text-slate-500">출판사</label>
             <input name="publisher"
               class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500">출판연도</label>
+            <input id="book-pubyear" name="pub_year" type="number"
+              class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              required />
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2">
@@ -602,6 +608,7 @@
     function openModal(id) {
       const m = document.getElementById(id);
       if (m) {
+        m.removeAttribute('hidden');
         m.classList.remove('hidden');
         m.classList.add('flex');
       }
@@ -609,6 +616,7 @@
     function closeModal(id) {
       const m = document.getElementById(id);
       if (m) {
+        m.setAttribute('hidden', 'true');
         m.classList.add('hidden');
         m.classList.remove('flex');
       }
@@ -787,15 +795,14 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             isbn: f.isbn.value, title: f.title.value, author: f.author.value,
-            publisher: f.publisher.value, pub_year: 2024
+            publisher: f.publisher.value, pub_year: f.pub_year.value || 2024
           }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || '메타데이터 등록에 실패했습니다.');
 
         alert('메타데이터가 등록되었습니다. 도서관 내 사본은 메타데이터 조회를 통해 추가해주세요.');
-        fetchBooks();
-        fetchAdminStats();
+        triggerGlobalRefresh();
         closeModal("modal-book");
         f.reset();
       } catch (err) { alert(err.message); }
@@ -810,9 +817,7 @@
 
       await loadBookCopies(isbn);
 
-      const modal = document.getElementById('modal-book-details');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      openModal('modal-book-details');
     }
 
     async function loadBookCopies(isbn) {
@@ -853,7 +858,7 @@
         });
         if (!res.ok) throw new Error('수정 권한 거부됨');
         alert('도서 메타데이터가 갱신되었습니다.');
-        fetchBooks();
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -863,8 +868,7 @@
         const res = await fetch(`${API_BASE}/books/${isbn}/copies`, { method: 'POST' });
         if (!res.ok) throw new Error('사본 추가 실패');
         await loadBookCopies(isbn);
-        fetchBooks();
-        fetchAdminStats();
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -879,8 +883,7 @@
         });
         if (!res.ok) throw new Error('상태 갱신 실패');
         await loadBookCopies(isbn);
-        fetchBooks();
-        fetchAdminStats();
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -919,8 +922,7 @@
         if (!res.ok) throw new Error(data.error || '회원 추가 실패');
 
         alert('새 회원이 등록되었습니다.');
-        fetchUsers();
-        fetchAdminStats();
+        triggerGlobalRefresh();
         closeModal("modal-user");
         f.reset();
       } catch (err) { alert(err.message); }
@@ -933,8 +935,7 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
         alert('회원이 삭제되었습니다.');
-        fetchUsers();
-        fetchAdminStats();
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -953,7 +954,7 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
         alert('회원 정보 수정이 완료되었습니다.');
-        fetchUsers();
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -974,11 +975,7 @@
 
         alert('대출 트랜잭션 정상 승인.');
         document.getElementById("loan-lookup-user-id").value = userId;
-        fetchUserLoans();
-
-        fetchBooks();
-        fetchAdminStats();
-        fetchHistory(true);
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -993,37 +990,37 @@
       if (!userId) {
         if (!append) { globalLoansCursorDate = null; globalLoansCursorId = null; }
         try {
-            let url = `${API_BASE}/loans/active?limit=10`;
-            if (globalLoansCursorDate) url += `&cursorDate=${encodeURIComponent(globalLoansCursorDate)}&cursorId=${globalLoansCursorId}`;
-            const res = await fetch(url);
-            const json = await res.json();
-            
-            const html = json.data.map(l => `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-3 text-sm font-mono">${l.loan_id}</td>
-                    <td class="p-3 text-sm font-bold text-slate-800">${l.title} <span class="text-xs font-normal text-slate-500">(유저 ID:${l.user_id})</span></td>
-                    <td class="p-3 text-sm text-slate-600">${l.copy_id}</td>
-                    <td class="p-3 text-sm text-slate-500">${new Date(l.loan_date).toISOString().slice(0,10)}</td>
-                    <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">
-                        ${new Date(l.due_date).toISOString().slice(0,10)} 
-                        ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체)` : `(${l.remaining_days}일 남음)`}
-                        <span class="text-xs ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
-                    </td>
-                    <td class="p-3 text-sm flex space-x-3 items-center">
-                        <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">반납</button>
-                        ${l.is_extended 
-                          ? `<span class="text-slate-400 font-bold cursor-not-allowed text-xs">연장불가</span>` 
-                          : `<button onclick="extendLoan(${l.loan_id})" class="text-blue-600 font-bold hover:underline">연장</button>`}
-                    </td>
-                </tr>
-            `).join('');
+          let url = `${API_BASE}/loans/active?limit=10`;
+          if (globalLoansCursorDate) url += `&cursorDate=${encodeURIComponent(globalLoansCursorDate)}&cursorId=${globalLoansCursorId}`;
+          const res = await fetch(url);
+          const json = await res.json();
 
-            if (append) tbody.innerHTML += html;
-            else tbody.innerHTML = html;
+          const html = json.data.map(l => `
+            <tr class="border-b hover:bg-slate-50">
+                <td class="p-3 text-sm font-mono">${l.loan_id}</td>
+                <td class="p-3 text-sm font-bold text-brand-600">${l.name} <span class="text-xs font-normal text-slate-500">(ID:${l.user_id})</span></td>
+                <td class="p-3 text-sm font-bold text-slate-800">${l.title} <span class="text-xs font-normal text-slate-500">(Copy:${l.copy_id})</span></td>
+                <td class="p-3 text-sm text-slate-500">${new Date(l.loan_date).toISOString().slice(0, 10)}</td>
+                <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">
+                    ${new Date(l.due_date).toISOString().slice(0, 10)} 
+                    ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체)` : `(${l.remaining_days}일 남음)`}
+                    <span class="text-xs ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
+                </td>
+                <td class="p-3 text-sm flex space-x-3 items-center">
+                    <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">반납</button>
+                    ${l.is_extended
+              ? `<span class="text-slate-400 font-bold cursor-not-allowed text-xs">연장불가</span>`
+              : `<button onclick="extendLoan(${l.loan_id})" class="text-blue-600 font-bold hover:underline">연장</button>`}
+                </td>
+            </tr>
+        `).join('');
 
-            globalLoansCursorDate = json.nextCursorDate;
-            globalLoansCursorId = json.nextCursorId;
-        } catch(err) { console.error(err); }
+          if (append) tbody.innerHTML += html;
+          else tbody.innerHTML = html;
+
+          globalLoansCursorDate = json.nextCursorDate;
+          globalLoansCursorId = json.nextCursorId;
+        } catch (err) { console.error(err); }
         return;
       }
 
@@ -1033,23 +1030,23 @@
         tbody.innerHTML = data.map(l => `
           <tr class="border-b hover:bg-slate-50">
             <td class="p-3 text-sm font-mono">${l.loan_id}</td>
-            <td class="p-3 text-sm font-bold text-brand-600">${l.title}</td>
-            <td class="p-3 text-sm text-slate-600">${l.copy_id}</td>
-            <td class="p-3 text-sm text-slate-500">${new Date(l.loan_date).toISOString().slice(0,10)}</td>
+                <td class="p-3 text-sm font-bold text-brand-600">${l.name} <span class="text-xs font-normal text-slate-500">(ID:${l.user_id})</span></td>
+                <td class="p-3 text-sm font-bold text-slate-800">${l.title} <span class="text-xs font-normal text-slate-500">(Copy:${l.copy_id})</span></td>
+            <td class="p-3 text-sm text-slate-500">${new Date(l.loan_date).toISOString().slice(0, 10)}</td>
             <td class="p-3 text-sm font-bold ${l.overdue_days > 0 ? 'text-red-600' : 'text-slate-700'}">
-                ${new Date(l.due_date).toISOString().slice(0,10)} 
+                ${new Date(l.due_date).toISOString().slice(0, 10)} 
                 ${l.overdue_days > 0 ? `(${l.overdue_days}일 연체)` : `(${l.remaining_days}일 남음)`}
                 <span class="text-xs ${l.is_extended ? 'text-purple-600' : 'text-slate-400'}">${l.is_extended ? '[연장됨]' : ''}</span>
             </td>
             <td class="p-3 text-sm flex space-x-3 items-center">
                 <button onclick="returnLoan(${l.loan_id})" class="text-green-600 font-bold hover:underline">반납</button>
-                ${l.is_extended 
-                  ? `<span class="text-slate-400 font-bold cursor-not-allowed text-xs">연장불가</span>` 
-                  : `<button onclick="extendLoan(${l.loan_id})" class="text-blue-600 font-bold hover:underline">연장</button>`}
+                ${l.is_extended
+            ? `<span class="text-slate-400 font-bold cursor-not-allowed text-xs">연장불가</span>`
+            : `<button onclick="extendLoan(${l.loan_id})" class="text-blue-600 font-bold hover:underline">연장</button>`}
             </td>
           </tr>
         `).join('');
-      } catch(err) { console.error('검색 실패'); }
+      } catch (err) { console.error('검색 실패'); }
     }
 
     function triggerGlobalRefresh() {
@@ -1058,6 +1055,7 @@
       fetchHistory(true);
       fetchBooks();
       fetchUsers();
+      fetchUserLoans();
     }
 
     async function returnLoan(loanId) {
@@ -1065,7 +1063,6 @@
         const res = await fetch(`${API_BASE}/loans/${loanId}/return`, { method: "PATCH" });
         if (!res.ok) throw new Error('반납 실패');
         alert('성공적으로 반납되었습니다.');
-        fetchUserLoans();
         triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
@@ -1073,11 +1070,10 @@
     async function extendLoan(loanId) {
       try {
         const res = await fetch(`${API_BASE}/loans/${loanId}/extend`, { method: "PATCH" });
-        if(!res.ok) throw new Error('연장 실패');
-        alert('대출 기한이 1주일 연장되었다.');
-        fetchUserLoans();
-        triggerGlobalRefresh(); 
-      } catch(err) { alert(err.message); }
+        if (!res.ok) throw new Error('연장 실패');
+        alert('대출 기한이 1주일 연장되었습니다.');
+        triggerGlobalRefresh();
+      } catch (err) { alert(err.message); }
     }
 
     /* ---------- 관리자 (Admin) ---------- */
@@ -1157,9 +1153,7 @@
       document.getElementById('user-history-search-input').value = '';
       await loadUserHistory(id, false);
 
-      const modal = document.getElementById('modal-user-details');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      openModal('modal-user-details');
     }
 
     async function loadUserCurrentLoans(userId) {
@@ -1236,7 +1230,7 @@
         });
         if (!res.ok) throw new Error('회원 수정 실패');
         alert('회원 정보가 수정되었습니다.');
-        fetchUsers();
+        triggerGlobalRefresh();
       } catch (err) { alert(err.message); }
     }
 
@@ -1272,9 +1266,7 @@
 
       await loadCopyHistory(copyId, false);
 
-      const modal = document.getElementById('modal-copy-history');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      openModal('modal-copy-history');
     }
 
     async function loadCopyHistory(copyId, append = false) {
@@ -1314,12 +1306,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       switchTab("books");
-      fetchBooks();
-      fetchUsers();
-      fetchOverdue();
-      fetchHistory();
-      fetchAdminStats();
-      fetchUserLoans();
+      triggerGlobalRefresh();
     });
   </script>
 </body>
