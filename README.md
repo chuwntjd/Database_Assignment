@@ -2,6 +2,8 @@
 Database Assignment
 Library 데이터베이스 구축 및 백엔드, 프론트엔드 연결 후 LibraryOS 웹사이트 구축
 
+init.sql을 통해 Database 구축
+
 LibraryOS 주요 탭
 - 도서 관리 : 도서 검색, 도서 메타데이터 추가, 도서 메타데이터 관리, 도서 사본 추가, 도서 사본 상태 변경, 도서 사본 대출 이력 확인
 - 회원 관리 : 회원 검색, 신규 회원 추가, 신규 회원 관리
