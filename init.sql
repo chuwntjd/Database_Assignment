@@ -121,3 +121,21 @@ CREATE TRIGGER trg_update_penalty_on_return
 AFTER UPDATE OF status ON loans
 FOR EACH ROW
 EXECUTE FUNCTION update_penalty_on_return();
+
+-- 테스트 데이터
+
+INSERT INTO users (name, email, phone) VALUES
+('홍길동', 'hong@example.com', '010-1111-2222'),
+('김철수', 'kim@example.com', '010-3333-4444'),
+('이영희', 'lee@example.com', '010-5555-6666');
+
+INSERT INTO books (isbn, title, author, publisher, pub_year) VALUES
+('9788937460449', '데미안', '헤르만 헤세', '민음사', 2000),
+('9788932917245', '1984', '조지 오웰', '문학동네', 2003),
+('9788937460753', '위대한 개츠비', 'F. 스콧 피츠제럴드', '민음사', 2003);
+
+INSERT INTO book_copies (isbn, status) VALUES
+('9788937460449', 'AVAILABLE'),
+('9788937460449', 'AVAILABLE'),
+('9788932917245', 'AVAILABLE'),
+('9788937460753', 'AVAILABLE');
